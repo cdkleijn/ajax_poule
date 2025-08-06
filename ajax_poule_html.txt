@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<style>
+body {
+            margin: 0;
+        }
+h2 {
+	font-weight: normal;
+    font-size: 14px;
+}
+
+table{
+
+    font-size: 15px;
+    border-collapse: collapse;
+
+}
+
+th, td {
+	
+    border: 1px solid black;
+
+}
+
+input {
+    border-width: 0px;
+    border: 1px solid black;
+}
+
+#prediction_field {
+    border: 0px;
+    width: 45px;
+}
+
+#userDiv {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 500px;
+    background-color: light-grey;
+    border-radius: 8px;
+}
+
+#userInfoTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#userInfoTable tr {
+    padding: 10px;
+}
+
+#userInfoTable td {
+    padding: 10px;
+    text-align: left;
+}
+
+#userInfoTable td:first-child {
+    font-weight: bold;
+}
+
+#userInfoTable input {
+	padding: 0px;
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+
+button.dropbtn {
+    background: none;
+    border: none;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.navbar {
+            background-color: #D2122E;
+            overflow: hidden;
+	    font-family: "ROBOTO";
+	    font-weight: bold;
+	    font-size: 16px;
+        }
+        .navbar button {
+            float: right;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+	.navbar h3 {
+		float: left;
+		display: block;
+		color: white;
+		padding: 14px 16px;
+		text-align: center;
+		text-decoration: none;
+		margin-top: 0px;
+
+	}
+
+        .user-icon {
+            margin-right: 10px;
+        }
+
+.login-window {
+	margin-top: 20px;
+}
+
+button {
+	background-color: #D2122E;
+	color: white;
+	font-weight: bold;
+}
+
+#match_prediction {
+    margin-top: 20px;
+}
+
+.tables-container {
+    display: flex;
+    gap: 20px; /* Ruimte tussen de tabellen */
+}
+
+#ranking_table {
+    margin-top: 30px;
+    border-collapse: collapse;
+    border: 1px solid #ccc; /* Lichte rand voor de cellen */
+}
+
+#ranking_table th, td {
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.tables-container table {
+    margin-right: 30px;
+    border-collapse: collapse;
+}
+
+.tables-container th, td {
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc; /* Lichte rand voor de cellen */
+}
+
+/* Achtergrondkleur voor de inputvelden */
+.tables-container input {
+    background-color: #D2122E;
+    color: white; /* Zorgt ervoor dat de tekst goed zichtbaar is */
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+}
+
+
+</style>
+    
+    
+<head>
+    <title>Soccer Predictions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<div class="navbar">
+	<h3> Ajax Poule vak 402 </h3>
+	<div id="loginDiv">
+            <button class="dropbtn" id="loginButton">
+            	<i class="fas fa-user user-icon dropbtn" id="userIcon"> </i> Login
+            </button>
+	</div>
+	<div id="userInfoDiv" style="display: none;">
+            <button class="dropbtn" id="userInfoButton">
+            	<i class="fas fa-user user-icon dropbtn" id="userIcon"></i> <span id="userName"> Gebruikersnaam </span>
+            </button>
+	</div>
+</div>
+
+    <div id="mainContainer">
+    </div>
+
+    <div class="login-window" id="auth-section" style="display: none;">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="signInButton">Log in</button>
+	<button id="updatePassword"> Reset wachtwoord </button>
+    </div>
+
+    <div id="match_prediction" style="display: none;">
+    	<h2> Eerstvolgende wedstrijd </h2>
+	<div class="tables-container">
+            <table id="match_table" class="table-bordered">
+                <th> Datum </th> 
+                <th> Thuis </th> 
+                <th> Uit </th> 
+            </table>
+            <table id="prediction_table" class="table-bordered">
+            </table>
+	</div>
+        <button id="addPrediction" style="margin-top: 20px"> Verstuur voorspelling </button>
+        <table id="ranking_table" class="table-bordered">
+	    <th> Ranking </th>
+	    <th> Naam </th>
+	    <th> Score </th>
+        </table>
+    </div>
+
+<div id="userDiv" style="display: none;">
+    <div id="userData">
+        <table id="userInfoTable">
+            <tr>
+                <td><strong>Gebruikersnaam</strong></td>
+                <td id="displayName">Laden...</td>
+            </tr>
+            <tr>
+                <td><strong>Emailadres</strong></td>
+                <td id="userEmail">Laden...</td>
+            </tr>
+            <tr>
+                <td><strong>Nieuw e-mailadres</strong></td>
+                <td><input type="email" id="newEmail" placeholder="Nieuw e-mailadres..."></td>
+            </tr>
+        </table>
+
+        <button id="updateUserInfoButton" style="margin-top: 20px">Update Gebruikersinformatie</button>
+        <button id="signOutButton" style="margin-top: 20px">Log uit</button>
+	<button id="backToPrediction" style="margin-top: 20px"> Terug </button>
+
+    </div>
+</div>
+
+
+    <div id="nextPredictionId" style="display: none;"></div>
+
+
+    <script type="module">
+        // Import the core Firebase App and Cloud Firestore services
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        
+                import { getAuth, sendPasswordResetEmail, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, addDoc, setDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyADh9mOGIa9tK8sGb9fu6PHUm-anH8aRPw",
+          authDomain: "voetbalpoule-aef18.firebaseapp.com",
+          databaseURL: "https://voetbalpoule-aef18-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "voetbalpoule-aef18",
+          storageBucket: "voetbalpoule-aef18.firebasestorage.app",
+          messagingSenderId: "678980778754",
+          appId: "1:678980778754:web:582c0f3d6487651b9ea01b"
+        };
+
+ // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Initialize Cloud Firestore and get a reference to the service
+        const db = getFirestore(app);
+        
+        // Get references to HTML elements
+	const mainContainer = document.getElementById('mainContainer');
+	const predictionDiv = document.getElementById("match_prediction");
+        const auth = getAuth(app);
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+	const loginButton = document.getElementById("loginButton");
+	const userInfoButton = document.getElementById("userInfoButton");
+        const signInButton = document.getElementById('signInButton');
+        const signOutButton = document.getElementById('signOutButton');
+        const userInfoDiv = document.getElementById('user-info');
+        const authSectionDiv = document.getElementById('auth-section');
+        const userIdSpan = document.getElementById('userId');
+        const addPredictionButton = document.getElementById("addPrediction");
+	const resetPasswordButton = document.getElementById("updatePassword");
+        const returnButton = document.getElementById("backToPrediction");
+
+        var nextMatch = "";
+
+	window.addEventListener("load", async (event) => {
+            try {
+                await signOut(auth);
+                // No need to manually update UI here, onAuthStateChanged will handle it
+	    } catch {
+		console.log("No user signed in");
+            }
+            resetMainContainer();
+	});
+
+        // --- Authentication Event Listeners ---
+
+        // Sign In
+        signInButton.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                loadPredictionWindow();
+            } catch (error) {
+                console.error("Sign in error:", error);
+            }
+        });
+
+        // Sign Out
+        signOutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                // No need to manually update UI here, onAuthStateChanged will handle it
+            } catch (error) {
+                authMessage.textContent = `Error signing out: ${error.message}`;
+                console.error("Sign out error:", error);
+            }
+        });
+
+        addPredictionButton.addEventListener("click", async () => {
+            const prediction = document.getElementById("prediction_field").value;
+	    const scores = prediction.split("-");
+	    const homeScore = parseInt(scores[0].trim());
+	    const awayScore = parseInt(scores[1].trim());
+            const matchid = nextMatch.id;
+            const userid = auth.currentUser.uid;
+		
+	    const predictionData = {
+	           matchId: matchid, 
+                   scoreAwayTeam: awayScore,
+                   scoreHomeTeam: homeScore, 
+                   timestamp: new Date(),
+                   userId: userid,
+	    }             
+
+	    if (document.getElementById("nextPredictionId").value !== ""){
+		await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
+               alert("Voorspelling opgeslagen!");
+	    } else {
+		
+
+            try {
+ 		await addDoc(collection(db, "Predictions"), predictionData);
+	    
+            alert("Voorspelling opgeslagen!");
+            } catch (error) { 
+
+              alert(error);
+            }}
+ 
+	});
+
+        loginButton.addEventListener("click", () => {
+		loadLoginWindow();
+	});
+
+        userInfoButton.addEventListener("click", () => {
+		;
+	});
+
+	updateUserInfoButton.addEventListener("click", () => {
+		const newDisplayName = document.getElementById("newDisplayName").value;
+		const newEmail = document.getElementById("newEmail").value;
+		if (newDisplayName !== ""){
+  			updateProfile(auth.currentUser, {displayName: newDisplayName});
+			alert("Gebruikersnaam bijgewerkt");
+		}
+		if (newEmail !== ""){
+  			updateProfile(auth.currentUser, {email: newEmail});
+			alert("Gebruikersnaam bijgewerkt");
+		}
+	});
+
+        resetPasswordButton.addEventListener("click", () => {
+	    const userMail = document.getElementById("email").value;
+	    const check1 = userMail !== "";
+	    const check2 = userMail.includes("@");
+
+	    if (check1 && check2) {
+                sendPasswordResetEmail(auth, userMail)
+		    .then(() => {
+	                alert("Er is een e-mail met wachtwoord-resetlink naar je verstuurd.");
+		    })
+		    .catch((error) => {
+                });
+            }    
+	});
+		
+	returnButton.addEventListener("click", () => {
+		loadPredictionWindow();
+	});
+
+		
+	async function loadDataFromTable(tableName){
+	    const coll = collection(db, tableName);
+	    const snapshot = await getDocs(coll);
+
+            const resultList = snapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	     }));
+             
+	     return resultList;	    
+
+	}
+
+
+	async function getUsers() {
+	    try {
+
+                const userList = await loadDataFromTable("Users");
+                var users = {};
+
+                for (var i = 0; i < userList.length; i++) {
+		    users[userList[i]["id"]] = userList[i]["userId"];
+		}
+
+                return users;
+
+            } catch (error) {
+                console.error("Error getting users:", error);
+            }
+	}
+
+	
+	async function getSortedMatches() {
+	    try {
+		const matchesCol = collection(db, "Matches");
+		const matchesQuery = query(matchesCol, orderBy("kickoffTime")); 
+		const matchSnapshot = await getDocs(matchesQuery);
+	        const matchList = matchSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+		const matches = {};
+		for (var i = 0; i < matchList.length; i++){
+		    matches[matchList[i]["id"]] = matchList[i];
+		}
+
+		return matches;
+	
+	    } catch (error) {
+                console.error("Error getting matches:", error);
+            }
+
+	}
+
+
+        async function getMatchPredictions(match) {
+            try {
+                const predictionCol = collection(db, 'Predictions');
+                const predictionSnapshot = await getDocs(predictionCol);
+
+                const predictionList = predictionSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+		var prediction;
+                var matchPrediction;
+		var matchPredictions = {};
+		var matchid;
+		var userid;
+
+		for (var i = 0; i < predictionList.length; i ++) {
+			prediction = predictionList[i];
+			matchid = prediction["matchId"];
+			userid = prediction["userId"];
+
+			if (matchid === match.id) {
+			    matchPrediction = prediction["scoreHomeTeam"].toString() + "-" + prediction["scoreAwayTeam"].toString();
+                            matchPredictions[userid] = matchPrediction;
+			    document.getElementById("nextPredictionId").value = prediction["id"];
+			}
+		}
+                
+                return matchPredictions;
+
+            } catch (error) {
+                console.error("Error getting predictions:", error);
+            }
+        }
+
+	function getNextMatch(matches){
+	    const currentDate = new Date();
+
+            for (const [key, value] of Object.entries(matches)) {
+		if (value["kickoffTime"].toDate() > currentDate) {
+		    return value;
+		}
+	    }
+	}
+
+        function timestampToFullDateRepr(timestamp){
+	    const dateObj = timestamp.toDate();
+	    
+	    const day = dateObj.getDate().toString().padStart(2, '0');
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Maanden zijn 0-indexed
+            const year = dateObj.getFullYear();
+
+            const hours = dateObj.getHours().toString().padStart(2, '0');
+            const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+
+            return `${day}-${month}-${year} ${hours}:${minutes}`;     // backticks zijn belangrijk
+	}
+
+	function getRanking(users, matches, predictions) {
+	    var baseScore = 0;
+	    var userRanking = [];
+	    
+	    for (const [user_name, user_id] of Object.entries(users)){ 
+		for (const [match_id, match_details] of Object.entries(matches)) {
+			const match_predictions = predictions[match_id] ?? {};
+			const user_prediction = match_predictions[user_id] ?? "";
+			baseScore += getPredictionPoints(user_prediction, match_details["finalScore"]);
+		}
+		userRanking.push({naam: user_name, score: baseScore});
+	    }
+            userRanking.sort((a, b) => b.score - a.score);
+	    
+	    var ranking = {};
+
+	    for (var i = 0; i < userRanking.length; i++){
+		ranking[userRanking[i].naam] = userRanking[i].score;
+	    }
+
+	    return ranking;
+ 	    
+	}
+
+
+	function getPredictionPoints(prediction, finalScore) {
+		if (prediction == "" || finalScore == ""){
+		    return 0;
+		} else if (prediction == finalScore) {
+		    return 3;
+		}
+
+		const predictedScore = prediction.split("-");
+		const predictedHomeGoals = predictedScore[0];
+		const predictedAwayGoals = predictedScore[1]; 		
+
+		const realizedScore = finalScore.split("-");
+		const realizedHomeGoals = realizedScore[0];
+		const realizedAwayGoals = realizedScore[1]; 
+
+		if (predictedHomeGoals > predictedAwayGoals && realizedHomeGoals > realizedAwayGoals) {
+		    return 1; 
+		} else if (predictedHomeGoals == predictedAwayGoals && realizedHomeGoals == realizedAwayGoals) {
+		    return 1; 
+		}  else if (predictedHomeGoals < predictedAwayGoals && realizedHomeGoals < realizedAwayGoals) {
+		    return 1;	
+		} else {
+		    return 0;
+		}
+	}
+
+	
+	async function getAllPredictions(){
+		const predictions = await loadDataFromTable("Predictions");
+		var predictionsDict = {};		
+
+		for (var i = 0; i < predictions.length; i++){
+			const home_score = predictions[i]["scoreHomeTeam"].toString();
+			const away_score = predictions[i]["scoreAwayTeam"].toString();
+			const user_id = predictions[i]["userId"];
+			predictionsDict[predictions[i]["matchId"]] = {}
+			predictionsDict[predictions[i]["matchId"]][user_id] = home_score + "-" + away_score;
+		}
+
+		return predictionsDict;
+	}
+        
+        async function loadPredictionTables() {
+	    console.log("loading prediction table");
+
+	    const users = await getUsers();
+	    const matches = await getSortedMatches();
+	    console.log(matches);
+
+            nextMatch = getNextMatch(matches);
+
+	    const allPredictions = await getAllPredictions();     // dict with matchId als key
+            console.log(allPredictions);
+            const matchpredictions = allPredictions[nextMatch["id"]];
+
+	    const ranking = getRanking(users, matches, allPredictions);
+     	    console.log(ranking);
+	   
+
+	    // Fill Match Table
+	    const matchTable = document.getElementById("match_table");
+            var row = matchTable.insertRow(1);
+            var dateCell = row.insertCell(0);
+            var homeTeamCell = row.insertCell(1);
+            var awayTeamCell = row.insertCell(2);
+
+            const formattedDate = timestampToFullDateRepr(nextMatch["kickoffTime"]);
+
+            dateCell.innerHTML = formattedDate;
+            homeTeamCell.innerHTML = nextMatch["home_team"];
+            awayTeamCell.innerHTML = nextMatch["away_team"];
+
+            // Fill Prediction Table by looping over users and retrieving their prediction (if present)
+
+            const predictionTable = document.getElementById("prediction_table");
+            
+	    const headerRow = document.createElement("tr");
+            for (const [key, value] of Object.entries(users)) {
+		const th = document.createElement("th");
+		th.textContent = key;
+		headerRow.appendChild(th);
+	    }
+	    predictionTable.appendChild(headerRow);
+            
+	    const predictionRow = document.createElement("tr"); 
+	    for (const [key, value] of Object.entries(users)) {
+		const td = document.createElement("td"); 
+		const userPrediction = matchpredictions[value] ?? "";
+		console.log(userPrediction);
+		if (key === auth.currentUser.displayName) {
+		    const inputField = document.createElement("input");
+		    inputField.setAttribute("type", "text");
+		    inputField.id = "prediction_field";
+	  	    inputField.value = userPrediction;
+		    inputField.background
+		    td.appendChild(inputField);
+		    td.style.backgroundColor = '#D2122E'
+		} else {
+		    td.textContent = userPrediction;
+		}
+		predictionRow.appendChild(td);
+            }
+            predictionTable.appendChild(predictionRow);
+
+	    // fill ranking table
+	    let userRanking = 1;
+
+            const rankingTable = document.getElementById("ranking_table");
+	    for (const [userName, userScore] of Object.entries(ranking)) {
+		const tr = document.createElement("tr"); 
+		const rankingCell = document.createElement("td"); 
+		rankingCell.textContent = userRanking;
+		tr.appendChild(rankingCell);
+
+		const userCell = document.createElement("td"); 
+		userCell.textContent = userName;
+		tr.appendChild(userCell);
+
+		const scoreCell = document.createElement("td"); 
+		scoreCell.textContent = userScore;
+		tr.appendChild(scoreCell);
+		rankingTable.appendChild(tr);
+	    }
+		
+          
+            document.getElementById("match_prediction").hidden = false;
+
+	}
+
+	function resetMainContainer(){
+		while (mainContainer.firstChild) {
+			mainContainer.removeChild(mainContainer.firstChild);
+		}
+	}
+
+	function loadLoginWindow(){
+		resetMainContainer();
+		authSectionDiv.style.display = "block";	
+		mainContainer.appendChild(authSectionDiv);
+	}
+
+	function loadPredictionWindow(){
+		resetMainContainer();
+		loadPredictionTables();
+		predictionDiv.style.display = "block";
+		mainContainer.appendChild(predictionDiv);
+		document.getElementById("loginDiv").style.display = "none";
+		document.getElementById("userInfoDiv").style.display = "block";
+		document.getElementById("userName").textContent = auth.currentUser.displayName;	
+		document.getElementById("userEmail").textContent = auth.currentUser.email;
+	}
+
+	function loadUserWindow(){
+		resetMainContainer();
+		const userDiv = document.getElementById("userDiv"); 
+		userDiv.style.display = "block"; 
+		mainContainer.appendChild(userDiv);
+	}
+            
+    </script>
+
+
+</body>
+</html>
