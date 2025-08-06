@@ -336,6 +336,7 @@ button {
 	    }             
 
 	    if (document.getElementById("nextPredictionId").value !== ""){
+                console.log("hello");
 		await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
                alert("Voorspelling opgeslagen!");
 	    } else {
@@ -448,42 +449,6 @@ button {
 
 	}
 
-
-        async function getMatchPredictions(match) {
-            try {
-                const predictionCol = collection(db, 'Predictions');
-                const predictionSnapshot = await getDocs(predictionCol);
-
-                const predictionList = predictionSnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-
-		var prediction;
-                var matchPrediction;
-		var matchPredictions = {};
-		var matchid;
-		var userid;
-
-		for (var i = 0; i < predictionList.length; i ++) {
-			prediction = predictionList[i];
-			matchid = prediction["matchId"];
-			userid = prediction["userId"];
-
-			if (matchid === match.id) {
-			    matchPrediction = prediction["scoreHomeTeam"].toString() + "-" + prediction["scoreAwayTeam"].toString();
-                            matchPredictions[userid] = matchPrediction;
-			    document.getElementById("nextPredictionId").value = prediction["id"];
-			}
-		}
-                
-                return matchPredictions;
-
-            } catch (error) {
-                console.error("Error getting predictions:", error);
-            }
-        }
-
 	function getNextMatch(matches){
 	    const currentDate = new Date();
 
@@ -586,6 +551,7 @@ button {
 	    const allPredictions = await getAllPredictions();     // dict with matchId als key
             console.log(allPredictions);
             const matchpredictions = allPredictions[nextMatch["id"]];
+            console.log(matchpredictions[auth.currentUser.uid][1]);
             document.getElementById("nextPredictionId").value = matchpredictions[auth.currentUser.uid][1];
 
 	    const ranking = getRanking(users, matches, allPredictions);	   
