@@ -339,6 +339,7 @@ button {
                 console.log("hello");
 		await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
                alert("Voorspelling opgeslagen!");
+		loadPredictionTables();
 	    } else {
 		
 
@@ -662,4 +663,5 @@ button {
 </body>
 
 </html>
+
 
