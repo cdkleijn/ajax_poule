@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 <html>
+	<meta name="viewport", content="width=device-width, initial_scale=1.0">
 <style>
 body {
             margin: 0;
@@ -551,8 +551,8 @@ button {
 	    const allPredictions = await getAllPredictions();     // dict with matchId als key
             console.log(allPredictions);
             const matchpredictions = allPredictions[nextMatch["id"]];
-            console.log(matchpredictions[auth.currentUser.uid][1]);
-            document.getElementById("nextPredictionId").value = matchpredictions[auth.currentUser.uid][1];
+            const authuserprediction = matchpredictions[auth.currentUser.uid] ?? {};
+            document.getElementById("nextPredictionId").value = authuserprediction[1] ?? "";
 
 	    const ranking = getRanking(users, matches, allPredictions);	   
 
@@ -660,4 +660,5 @@ button {
 
 
 </body>
+
 </html>
