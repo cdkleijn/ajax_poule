@@ -551,7 +551,7 @@ button {
 	    const allPredictions = await getAllPredictions();     // dict with matchId als key
             console.log(allPredictions);
             const matchpredictions = allPredictions[nextMatch["id"]];
-            const authuserprediction = matchpredictions[auth.currentUser.uid] ?? {};
+            const authuserprediction = matchpredictions[auth.currentUser.uid] ?? ["", ""];
             document.getElementById("nextPredictionId").value = authuserprediction[1] ?? "";
 
 	    const ranking = getRanking(users, matches, allPredictions);	   
@@ -584,7 +584,7 @@ button {
 	    const predictionRow = document.createElement("tr"); 
 	    for (const [key, value] of Object.entries(users)) {
 		const td = document.createElement("td"); 
-		const userPrediction = matchpredictions[value] ?? "";
+		const userPrediction = matchpredictions[value] ?? ["", ""];
 		console.log(userPrediction);
 		if (key === auth.currentUser.displayName) {
 		    const inputField = document.createElement("input");
@@ -662,3 +662,4 @@ button {
 </body>
 
 </html>
+
