@@ -339,7 +339,6 @@ button {
                 console.log("hello");
 		await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
                alert("Voorspelling opgeslagen!");
-		loadPredictionTables();
 	    } else {
 		
 
@@ -351,7 +350,6 @@ button {
 
               alert(error);
             }}
- 
 	});
 
         loginButton.addEventListener("click", () => {
@@ -527,13 +525,17 @@ button {
 	
 	async function getAllPredictions(){
 		const predictions = await loadDataFromTable("Predictions");
-		var predictionsDict = {};		
+		var predictionsDict = {};	
+		
 
 		for (var i = 0; i < predictions.length; i++){
 			const home_score = predictions[i]["scoreHomeTeam"].toString();
 			const away_score = predictions[i]["scoreAwayTeam"].toString();
 			const user_id = predictions[i]["userId"];
-			predictionsDict[predictions[i]["matchId"]] = {}
+			console.log(predictions[i]["matchId"]);
+			if (!(predictions[i]["matchId"] in predictionsDict)) {
+			    predictionsDict[predictions[i]["matchId"]] = {}
+			}
 			predictionsDict[predictions[i]["matchId"]][user_id] = [home_score + "-" + away_score, predictions[i]["id"]];
 		}
 
@@ -606,6 +608,7 @@ button {
 	    let userRanking = 1;
 
             const rankingTable = document.getElementById("ranking_table");
+		
 	    for (const [userName, userScore] of Object.entries(ranking)) {
 		const tr = document.createElement("tr"); 
 		const rankingCell = document.createElement("td"); 
@@ -663,5 +666,6 @@ button {
 </body>
 
 </html>
+
 
 
