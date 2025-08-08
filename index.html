@@ -660,6 +660,7 @@ button {
 	}
 
 	window.addEventListener("beforeUnload", function (event) {
+		console.log("reached event");
 		loadPredictionWindow();
 		event.preventDefault();
 		event.returnValue = "";
@@ -668,6 +669,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
