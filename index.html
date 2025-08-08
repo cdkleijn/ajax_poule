@@ -472,18 +472,18 @@ button {
 	}
 
 	function getRanking(users, matches, predictions) {
-	    var baseScore = 0;
 	    var userRanking = [];
 	    
 	    for (const [user_name, user_id] of Object.entries(users)){ 
-		for (const [match_id, match_details] of Object.entries(matches)) {
-			const match_predictions = predictions[match_id] ?? {};
-			const user_prediction = match_predictions[user_id] ?? "";
-			baseScore += getPredictionPoints(user_prediction[0], match_details["finalScore"]);
-		}
-		userRanking.push({naam: user_name, score: baseScore});
+			var baseScore = 0;
+			for (const [match_id, match_details] of Object.entries(matches)) {
+				const match_predictions = predictions[match_id] ?? {};
+				const user_prediction = match_predictions[user_id] ?? [""];
+				baseScore += getPredictionPoints(user_prediction[0], match_details["finalScore"]);
+			}
+			userRanking.push({naam: user_name, score: baseScore});
 	    }
-            userRanking.sort((a, b) => b.score - a.score);
+        userRanking.sort((a, b) => b.score - a.score);
 	    
 	    var ranking = {};
 
@@ -666,6 +666,7 @@ button {
 </body>
 
 </html>
+
 
 
 
