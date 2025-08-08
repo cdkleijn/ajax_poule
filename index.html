@@ -321,31 +321,31 @@ button {
 
         addPredictionButton.addEventListener("click", async () => {
             const prediction = document.getElementById("prediction_field").value;
-	    const scores = prediction.split("-");
-	    const homeScore = parseInt(scores[0].trim());
-	    const awayScore = parseInt(scores[1].trim());
+		    const scores = prediction.split("-");
+		    const homeScore = parseInt(scores[0].trim());
+		    const awayScore = parseInt(scores[1].trim());
             const matchid = nextMatch.id;
             const userid = auth.currentUser.uid;
 		
-	    const predictionData = {
-	           matchId: matchid, 
-                   scoreAwayTeam: awayScore,
-                   scoreHomeTeam: homeScore, 
-                   timestamp: new Date(),
-                   userId: userid,
-	    }             
+		    const predictionData = {
+		           matchId: matchid, 
+	                   scoreAwayTeam: awayScore,
+	                   scoreHomeTeam: homeScore, 
+	                   timestamp: new Date(),
+	                   userId: userid,
+		    }             
 
-	    if (document.getElementById("nextPredictionId").value !== ""){
-                console.log("hello");
-		await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
-               alert("Voorspelling opgeslagen!");
-	    } else {
+		    if (document.getElementById("nextPredictionId").value !== ""){
+	                console.log("hello");
+			await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
+	               alert("Voorspelling opgeslagen!");
+		    } else {
 		
 
             try {
- 		await addDoc(collection(db, "Predictions"), predictionData);
+ 				await addDoc(collection(db, "Predictions"), predictionData);
 	    
-            alert("Voorspelling opgeslagen!");
+            	alert("Voorspelling opgeslagen!");
             } catch (error) { 
 
               alert(error);
@@ -658,10 +658,17 @@ button {
 		userDiv.style.display = "block"; 
 		mainContainer.appendChild(userDiv);
 	}
+
+	window.addEventListener("beforeUnload", function (event) {
+		loadPredictionWindow();
+		event.preventDefault();
+		event.returnValue = "";
+	});
             
     </script>
 </body>
 </html>
+
 
 
 
