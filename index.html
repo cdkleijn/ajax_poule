@@ -488,13 +488,12 @@ button {
 	    var ranking = {};
 
 	    for (var i = 0; i < userRanking.length; i++){
-		ranking[userRanking[i].naam] = userRanking[i].score;
+			ranking[userRanking[i].naam] = userRanking[i].score;
 	    }
 
 	    return ranking;
  	    
 	}
-
 
 	function getPredictionPoints(prediction, finalScore) {
 		if (prediction == "" || finalScore == ""){
@@ -577,57 +576,57 @@ button {
             const predictionTable = document.getElementById("prediction_table");
             
 	    const headerRow = document.createElement("tr");
-            for (const [key, value] of Object.entries(users)) {
-		const th = document.createElement("th");
-		th.textContent = key;
-		headerRow.appendChild(th);
+        for (const [key, value] of Object.entries(users)) {
+			const th = document.createElement("th");
+			th.textContent = key;
+			headerRow.appendChild(th);
 	    }
 	    predictionTable.appendChild(headerRow);
             
 	    const predictionRow = document.createElement("tr"); 
 	    for (const [key, value] of Object.entries(users)) {
-		const td = document.createElement("td"); 
-		const userPrediction = matchpredictions[value] ?? ["", ""];
-		console.log(userPrediction);
-		if (key === auth.currentUser.displayName) {
-		    const inputField = document.createElement("input");
-		    inputField.setAttribute("type", "text");
-		    inputField.id = "prediction_field";
-	  	    inputField.value = userPrediction[0];
-		    inputField.background
-		    td.appendChild(inputField);
-		    td.style.backgroundColor = '#D2122E'
-		} else {
-		    td.textContent = userPrediction[0];
-		}
-		predictionRow.appendChild(td);
-            }
-            predictionTable.appendChild(predictionRow);
+			const td = document.createElement("td"); 
+			const userPrediction = matchpredictions[value] ?? ["", ""];
+			console.log(userPrediction);
+			if (key === auth.currentUser.displayName) {
+			    const inputField = document.createElement("input");
+			    inputField.setAttribute("type", "text");
+			    inputField.id = "prediction_field";
+		  	    inputField.value = userPrediction[0];
+			    inputField.background
+			    td.appendChild(inputField);
+			    td.style.backgroundColor = '#D2122E'
+			} else {
+			    td.textContent = userPrediction[0];
+			}
+			predictionRow.appendChild(td);
+        }
+        predictionTable.appendChild(predictionRow);
 
 	    // fill ranking table
 	    let userRanking = 1;
 
-            const rankingTable = document.getElementById("ranking_table");
+            
+		const rankingTable = document.getElementById("ranking_table");
 		
 	    for (const [userName, userScore] of Object.entries(ranking)) {
-		const tr = document.createElement("tr"); 
-		const rankingCell = document.createElement("td"); 
-		rankingCell.textContent = userRanking;
-		tr.appendChild(rankingCell);
-
-		const userCell = document.createElement("td"); 
-		userCell.textContent = userName;
-		tr.appendChild(userCell);
-
-		const scoreCell = document.createElement("td"); 
-		scoreCell.textContent = userScore;
-		tr.appendChild(scoreCell);
-		rankingTable.appendChild(tr);
+			const tr = document.createElement("tr"); 
+			const rankingCell = document.createElement("td"); 
+			rankingCell.textContent = userRanking;
+			tr.appendChild(rankingCell);
+	
+			const userCell = document.createElement("td"); 
+			userCell.textContent = userName;
+			tr.appendChild(userCell);
+	
+			const scoreCell = document.createElement("td"); 
+			scoreCell.textContent = userScore;
+			tr.appendChild(scoreCell);
+			rankingTable.appendChild(tr);
+			userRanking += 1;
 	    }
-		
-          
-            document.getElementById("match_prediction").hidden = false;
-
+      
+        document.getElementById("match_prediction").hidden = false;
 	}
 
 	function resetMainContainer(){
@@ -661,11 +660,9 @@ button {
 	}
             
     </script>
-
-
 </body>
-
 </html>
+
 
 
 
