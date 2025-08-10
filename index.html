@@ -336,7 +336,6 @@ button {
 		    }             
 
 		    if (document.getElementById("nextPredictionId").value !== ""){
-	                console.log("hello");
 			await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
 	               alert("Voorspelling opgeslagen!");
 		    } else {
@@ -503,7 +502,7 @@ button {
 		    return 3;
 		}
 
-		const points = 0;
+		var points = 0;
 
 		const predictedScore = prediction.split("-");
 		const predictedHomeGoals = predictedScore[0];
@@ -519,7 +518,6 @@ button {
 		
 		if (predictedHomeGoals > predictedAwayGoals && realizedHomeGoals > realizedAwayGoals) {
 		    points += 1; 
-			console.log("home team won");
 		} else if (predictedHomeGoals == predictedAwayGoals && realizedHomeGoals == realizedAwayGoals) {
 		    points += 1; 
 		}  else if (predictedHomeGoals < predictedAwayGoals && realizedHomeGoals < realizedAwayGoals) {
@@ -685,6 +683,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
