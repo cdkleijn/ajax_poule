@@ -479,7 +479,8 @@ button {
 			for (const [match_id, match_details] of Object.entries(matches)) {
 				const match_predictions = predictions[match_id] ?? {};
 				const user_prediction = match_predictions[user_id] ?? [""];
-				baseScore += getPredictionPoints(user_prediction[0], match_details["finalScore"]);
+				const ajaxPlayingHome = match_details["home_team"] == "Ajax";
+				baseScore += getPredictionPoints(user_prediction[0], match_details["finalScore"], ajaxPlayingHome);
 			}
 			userRanking.push({naam: user_name, score: baseScore});
 	    }
@@ -495,30 +496,50 @@ button {
  	    
 	}
 
-	function getPredictionPoints(prediction, finalScore) {
+	function getPredictionPoints(prediction, finalScore, ajaxPlaysHome) {
 		if (prediction == "" || finalScore == ""){
 		    return 0;
 		} else if (prediction == finalScore) {
 		    return 3;
 		}
 
+		const points = 0;
+
 		const predictedScore = prediction.split("-");
 		const predictedHomeGoals = predictedScore[0];
 		const predictedAwayGoals = predictedScore[1]; 		
+		const predictedDiff = predictedHomeGoals - predictedAwayGoals;
 
 		const realizedScore = finalScore.split("-");
 		const realizedHomeGoals = realizedScore[0];
 		const realizedAwayGoals = realizedScore[1]; 
-
+		const realizedDiff = realizedHomeGoals - realizedAwayGoals;
+		
+		// 1 point if winner is correct 
+		
 		if (predictedHomeGoals > predictedAwayGoals && realizedHomeGoals > realizedAwayGoals) {
-		    return 1; 
+		    points += 1; 
 		} else if (predictedHomeGoals == predictedAwayGoals && realizedHomeGoals == realizedAwayGoals) {
-		    return 1; 
+		    points += 1; 
 		}  else if (predictedHomeGoals < predictedAwayGoals && realizedHomeGoals < realizedAwayGoals) {
-		    return 1;	
-		} else {
-		    return 0;
+		    points += 1;	
+		} 
+
+		// 1 point if Ajax goals is correct
+		const homeGoalsCorrect = predictedHomeGoals == realizedHomeGoals;
+		const awayGoalsCorrect = predictedAwayGoals == realizedAwayGoals;
+
+		if ( (ajaxPlaysHome && homeGoalsCorrect) || (!ajaxPlaysHome & awayGoalsCorrect)) {
+			points += 1;
 		}
+
+		// 1 point if goalDiff is correct
+
+		if (predictedDiff == realizedDiff) {
+			points += 1;
+		}
+
+		return points
 	}
 
 	
@@ -542,24 +563,24 @@ button {
 	}
         
         async function loadPredictionTables() {
-	    console.log("loading prediction table");
-
-	    const users = await getUsers();
-	    const matches = await getSortedMatches();
-	    console.log(matches);
+		    console.log("loading prediction table");
+	
+		    const users = await getUsers();
+		    const matches = await getSortedMatches();
+		    console.log(matches);
 
             nextMatch = getNextMatch(matches);
 
-	    const allPredictions = await getAllPredictions();     // dict with matchId als key
+	    	const allPredictions = await getAllPredictions();     // dict with matchId als key
             console.log(allPredictions);
-            const matchpredictions = allPredictions[nextMatch["id"]];
+            const matchpredictions = allPredictions[nextMatch["id"]] ?? {};
             const authuserprediction = matchpredictions[auth.currentUser.uid] ?? ["", ""];
             document.getElementById("nextPredictionId").value = authuserprediction[1] ?? "";
 
-	    const ranking = getRanking(users, matches, allPredictions);	   
-
-	    // Fill Match Table
-	    const matchTable = document.getElementById("match_table");
+		    const ranking = getRanking(users, matches, allPredictions);	   
+	
+		    // Fill Match Table
+		    const matchTable = document.getElementById("match_table");
             var row = matchTable.insertRow(1);
             var dateCell = row.insertCell(0);
             var homeTeamCell = row.insertCell(1);
@@ -575,33 +596,33 @@ button {
 
             const predictionTable = document.getElementById("prediction_table");
             
-	    const headerRow = document.createElement("tr");
-        for (const [key, value] of Object.entries(users)) {
-			const th = document.createElement("th");
-			th.textContent = key;
-			headerRow.appendChild(th);
-	    }
-	    predictionTable.appendChild(headerRow);
-            
-	    const predictionRow = document.createElement("tr"); 
-	    for (const [key, value] of Object.entries(users)) {
-			const td = document.createElement("td"); 
-			const userPrediction = matchpredictions[value] ?? ["", ""];
-			console.log(userPrediction);
-			if (key === auth.currentUser.displayName) {
-			    const inputField = document.createElement("input");
-			    inputField.setAttribute("type", "text");
-			    inputField.id = "prediction_field";
-		  	    inputField.value = userPrediction[0];
-			    inputField.background
-			    td.appendChild(inputField);
-			    td.style.backgroundColor = '#D2122E'
-			} else {
-			    td.textContent = userPrediction[0];
-			}
-			predictionRow.appendChild(td);
-        }
-        predictionTable.appendChild(predictionRow);
+		    const headerRow = document.createElement("tr");
+	        for (const [key, value] of Object.entries(users)) {
+				const th = document.createElement("th");
+				th.textContent = key;
+				headerRow.appendChild(th);
+		    }
+		    predictionTable.appendChild(headerRow);
+	            
+		    const predictionRow = document.createElement("tr"); 
+		    for (const [key, value] of Object.entries(users)) {
+				const td = document.createElement("td"); 
+				const userPrediction = matchpredictions[value] ?? ["", ""];
+				console.log(userPrediction);
+				if (key === auth.currentUser.displayName) {
+				    const inputField = document.createElement("input");
+				    inputField.setAttribute("type", "text");
+				    inputField.id = "prediction_field";
+			  	    inputField.value = userPrediction[0];
+				    inputField.background
+				    td.appendChild(inputField);
+				    td.style.backgroundColor = '#D2122E'
+				} else {
+				    td.textContent = userPrediction[0];
+				}
+				predictionRow.appendChild(td);
+	        }
+	        predictionTable.appendChild(predictionRow);
 
 	    // fill ranking table
 	    let userRanking = 1;
@@ -663,6 +684,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
