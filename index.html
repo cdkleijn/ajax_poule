@@ -139,6 +139,18 @@ button {
     border: 1px solid #ccc;
 }
 
+#attendance_ranking_table {
+    margin-top: 30px;
+    border-collapse: collapse;
+    border: 1px solid #ccc; /* Lichte rand voor de cellen */
+}
+
+#attendance_ranking_table th, td {
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
 .tables-container table {
     margin-right: 30px;
     border-collapse: collapse;
@@ -210,6 +222,11 @@ button {
 		    <th> Naam </th>
 		    <th> Score </th>
         </table>
+		<table id="attendance_ranking_table" class="table-bordered">
+		    <th> Ranking </th>
+		    <th> Naam </th>
+		    <th> Score </th>
+        </table>
 		<button id="refreshPrediction" style="margin-top: 20px"> Refresh  </button>
     </div>
 
@@ -239,52 +256,51 @@ button {
 
 
     <div id="nextPredictionId" style="display: none;"></div>
-
-
+	
     <script type="module">
         // Import the core Firebase App and Cloud Firestore services
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         
-                import { getAuth, sendPasswordResetEmail, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getAuth, sendPasswordResetEmail, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, collection, getDocs, addDoc, setDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyADh9mOGIa9tK8sGb9fu6PHUm-anH8aRPw",
-          authDomain: "voetbalpoule-aef18.firebaseapp.com",
-          databaseURL: "https://voetbalpoule-aef18-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "voetbalpoule-aef18",
-          storageBucket: "voetbalpoule-aef18.firebasestorage.app",
-          messagingSenderId: "678980778754",
-          appId: "1:678980778754:web:582c0f3d6487651b9ea01b"
+        	apiKey: "AIzaSyADh9mOGIa9tK8sGb9fu6PHUm-anH8aRPw",
+          	authDomain: "voetbalpoule-aef18.firebaseapp.com",
+          	databaseURL: "https://voetbalpoule-aef18-default-rtdb.europe-west1.firebasedatabase.app",
+          	projectId: "voetbalpoule-aef18",
+          	storageBucket: "voetbalpoule-aef18.firebasestorage.app",
+          	messagingSenderId: "678980778754",
+          	appId: "1:678980778754:web:582c0f3d6487651b9ea01b"
         };
 
- // Initialize Firebase
+ 		// Initialize Firebase
         const app = initializeApp(firebaseConfig);
 
         // Initialize Cloud Firestore and get a reference to the service
         const db = getFirestore(app);
         
         // Get references to HTML elements
-	const mainContainer = document.getElementById('mainContainer');
-	const predictionDiv = document.getElementById("match_prediction");
+		const mainContainer = document.getElementById('mainContainer');
+		const predictionDiv = document.getElementById("match_prediction");
         const auth = getAuth(app);
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
-	const loginButton = document.getElementById("loginButton");
-	const userInfoButton = document.getElementById("userInfoButton");
+		const loginButton = document.getElementById("loginButton");
+		const userInfoButton = document.getElementById("userInfoButton");
         const signInButton = document.getElementById('signInButton');
         const signOutButton = document.getElementById('signOutButton');
         const userInfoDiv = document.getElementById('user-info');
         const authSectionDiv = document.getElementById('auth-section');
         const userIdSpan = document.getElementById('userId');
         const addPredictionButton = document.getElementById("addPrediction");
-	const resetPasswordButton = document.getElementById("updatePassword");
+		const resetPasswordButton = document.getElementById("updatePassword");
         const returnButton = document.getElementById("backToPrediction");
 
         var nextMatch = "";
 
-	window.addEventListener("load", async (event) => {
+		window.addEventListener("load", async (event) => {
             try {
                 await signOut(auth);
                 // No need to manually update UI here, onAuthStateChanged will handle it
@@ -292,7 +308,7 @@ button {
 		console.log("No user signed in");
             }
             resetMainContainer();
-	});
+		});
 
         // --- Authentication Event Listeners ---
 
@@ -474,6 +490,41 @@ button {
             return `${day}-${month}-${year} ${hours}:${minutes}`;     // backticks zijn belangrijk
 	}
 
+	function getAttendanceRanking(users, matches) {
+		var attendancePoints = {};
+		var attendanceRanking = [];
+		var attendees = "";
+
+		for (const [match_id, match_details] of Object.entries(matches)){ 
+			const ajaxPlayingHome = match_details["home_team"] == "Ajax";
+			if (ajaxPlayingHome) {
+				attendees = match_details["attendees"];
+				console.log(
+				for (const [user_name, user_id] of Object.entries(users)){	
+					if (attendees.includes(user_name)){
+						attendancePoints[user_name] = attendancePoints[user_name] ?? 0 + 1;
+					}
+				}
+			}
+			
+	    }
+
+		for (const [user_name, points] in Object.entries(attendancePoints) {
+			attendanceRanking.push({naam: user_name, score: points});
+		}
+				
+        attendanceRanking.sort((a, b) => b.score - a.score);
+	    
+	    var ranking = {};
+
+	    for (var i = 0; i < attendanceRanking.length; i++){
+			ranking[attendanceRanking[i].naam] = attendanceRanking[i].score;
+	    }
+
+	    return ranking;
+		
+	}
+
 	function getRanking(users, matches, predictions) {
 	    var userRanking = [];
 	    
@@ -580,7 +631,8 @@ button {
             const authuserprediction = matchpredictions[auth.currentUser.uid] ?? ["", ""];
             document.getElementById("nextPredictionId").value = authuserprediction[1] ?? "";
 
-		    const ranking = getRanking(users, matches, allPredictions);	   
+		    const ranking = getRanking(users, matches, allPredictions);	  
+			const attendanceRanking = getAttendanceRanking(users, matches);
 	
 		    // Fill Match Table
 		    const matchTable = document.getElementById("match_table");
@@ -629,11 +681,32 @@ button {
 
 	    // fill ranking table
 	    let userRanking = 1;
-
-            
+    
 		const rankingTable = document.getElementById("ranking_table");
 		
 	    for (const [userName, userScore] of Object.entries(ranking)) {
+			const tr = document.createElement("tr"); 
+			const rankingCell = document.createElement("td"); 
+			rankingCell.textContent = userRanking;
+			tr.appendChild(rankingCell);
+	
+			const userCell = document.createElement("td"); 
+			userCell.textContent = userName;
+			tr.appendChild(userCell);
+	
+			const scoreCell = document.createElement("td"); 
+			scoreCell.textContent = userScore;
+			tr.appendChild(scoreCell);
+			rankingTable.appendChild(tr);
+			userRanking += 1;
+	    }
+
+		// fill attendance ranking table
+	    let attendanceRanking = 1;
+    
+		const attendanceRankingTable = document.getElementById("attendence_ranking_table");
+		
+	    for (const [userName, userScore] of Object.entries(attendanceRanking)) {
 			const tr = document.createElement("tr"); 
 			const rankingCell = document.createElement("td"); 
 			rankingCell.textContent = userRanking;
@@ -687,6 +760,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
