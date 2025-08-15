@@ -80,34 +80,33 @@ button.dropbtn {
 }
 
 .navbar {
-            background-color: #D2122E;
-            overflow: hidden;
-	    font-family: "ROBOTO";
-	    font-weight: bold;
-	    font-size: 16px;
-        }
-        .navbar button {
-            float: right;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-	.navbar h3 {
-		float: left;
-		display: block;
-		color: white;
-		padding: 14px 16px;
-		text-align: center;
-		text-decoration: none;
-		margin-top: 0px;
+	 background-color: #D2122E;
+     overflow: hidden;
+	 font-family: "ROBOTO";
+	 font-weight: bold;
+	 font-size: 16px;
+}
+.navbar button {
+	float: right;
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+.navbar h3 {
+	float: left;
+	display: block;
+	color: white;
+	padding: 14px 16px;
+	text-align: center;
+	text-decoration: none;
+	margin-top: 0px;
+}
 
-	}
-
-        .user-icon {
-            margin-right: 10px;
-        }
+.user-icon {
+    margin-right: 10px;
+}
 
 .login-window {
 	margin-top: 20px;
@@ -207,10 +206,11 @@ button {
 	</div>
         <button id="addPrediction" style="margin-top: 20px"> Verstuur voorspelling </button>
         <table id="ranking_table" class="table-bordered">
-	    <th> Ranking </th>
-	    <th> Naam </th>
-	    <th> Score </th>
+		    <th> Ranking </th>
+		    <th> Naam </th>
+		    <th> Score </th>
         </table>
+		<button id="refreshPrediction" style="margin-top: 20px"> Refresh  </button>
     </div>
 
 <div id="userDiv" style="display: none;">
@@ -351,11 +351,15 @@ button {
             }}
 	});
 
-        loginButton.addEventListener("click", () => {
+    loginButton.addEventListener("click", () => {
 		loadLoginWindow();
 	});
 
-        userInfoButton.addEventListener("click", () => {
+	document.addEventListener("click", () => {
+		loadPredictionWindow();
+	});
+
+    userInfoButton.addEventListener("click", () => {
 		;
 	});
 
@@ -683,6 +687,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
