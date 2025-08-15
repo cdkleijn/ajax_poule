@@ -509,7 +509,7 @@ button {
 			
 	    }
 
-		for (const [user_name, points] in Object.entries(attendancePoints) {
+		for (const [user_name, points] of Object.entries(attendancePoints)) {
 			attendanceRanking.push({naam: user_name, score: points});
 		}
 				
@@ -760,6 +760,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
