@@ -499,7 +499,6 @@ button {
 			const ajaxPlayingHome = match_details["home_team"] == "Ajax";
 			if (ajaxPlayingHome) {
 				attendees = match_details["attendees"];
-				console.log(
 				for (const [user_name, user_id] of Object.entries(users)){	
 					if (attendees.includes(user_name)){
 						attendancePoints[user_name] = attendancePoints[user_name] ?? 0 + 1;
@@ -760,6 +759,7 @@ button {
     </script>
 </body>
 </html>
+
 
 
 
