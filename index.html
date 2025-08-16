@@ -1,160 +1,11 @@
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial_scale=1.0">
-<style>
-    body {
-        margin: 0;
-    }
-    h2 {
-        font-weight: normal;
-        font-size: 14px;
-    }
-
-    table{
-
-        font-size: 15px;
-        border-collapse: collapse;
-
-    }
-
-    th, td {
-
-        border: 1px solid black;
-
-    }
-
-    input {
-        border: 1px solid black;
-    }
-
-    #prediction_field {
-        border: 0;
-        width: 45px;
-    }
-
-    #userDiv {
-        margin: 20px auto;
-        padding: 20px;
-        max-width: 500px;
-        background-color: grey;
-        border-radius: 8px;
-    }
-
-    #userInfoTable {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
-
-    #userInfoTable tr {
-        padding: 10px;
-    }
-
-    #userInfoTable td {
-        padding: 10px;
-        text-align: left;
-    }
-
-    #userInfoTable td:first-child {
-        font-weight: bold;
-    }
-
-    #userInfoTable input {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-    }
-
-
-    button.dropbtn {
-        background: none;
-        border: none;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    .navbar {
-        background-color: #D2122E;
-        overflow: hidden;
-        font-family: "ROBOTO";
-        font-weight: bold;
-        font-size: 16px;
-    }
-    .navbar button {
-        float: right;
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-    }
-    .navbar h3 {
-        float: left;
-        display: block;
-        color: white;
-        padding: 14px 16px;
-        text-align: center;
-        text-decoration: none;
-        margin-top: 0;
-    }
-
-    .user-icon {
-        margin-right: 10px;
-    }
-
-    .login-window {
-        margin-top: 20px;
-    }
-
-    button {
-        background-color: #D2122E;
-        color: white;
-        font-weight: bold;
-    }
-
-    #match_prediction {
-        margin-top: 20px;
-    }
-
-    .tables-container {
-        display: flex;
-        gap: 20px; /* Ruimte tussen de tabellen */
-    }
-
-    .prediction-tables {
-        border: 1px solid #ccc;
-        text-align: center;
-        padding: 5px;
-        border-collapse: collapse;
-    }
-
-    .prediction-tables caption {
-        margin-bottom: 10px;
-    }
-
-    .prediction-tables th {
-        font-weight: bold;
-    }
-
-    .prediction-tables input {
-        background-color: #D2122E;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        text-align: center;
-    }
-
-</style>
 
 
 <head>
     <title>Soccer Predictions</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -203,9 +54,11 @@
         <table id="ranking_table" class="prediction-tables">
             <caption> Stand </caption>
             <tr>
-                <th> Ranking </th>
                 <th> Naam </th>
-                <th> Score </th>
+                <th> Winnaar </th>
+                <th> Ajax Goals </th>
+                <th> Doelsaldo </th>
+                <th> Totaal </th>
             </tr>
             <tbody></tbody>
         </table>
@@ -525,20 +378,27 @@
 
         for (const [user_name, user_id] of Object.entries(users)){
             var baseScore = 0;
+            var goalsAjaxScore = 0;
+            var goalDiffScore = 0;
+            var winnerScore = 0;
             for (const [match_id, match_details] of Object.entries(matches)) {
                 const match_predictions = predictions[match_id] ?? {};
                 const user_prediction = match_predictions[user_id] ?? [""];
-                const ajaxPlayingHome = match_details["home_team"] == "Ajax";
-                baseScore += getPredictionPoints(user_prediction[0], match_details["finalScore"], ajaxPlayingHome);
+                const ajaxPlayingHome = match_details["home_team"] === "Ajax";
+                let points = getPredictionPoints(user_prediction[0], match_details["finalScore"], ajaxPlayingHome);
+                winnerScore += points[0];
+                goalsAjaxScore += points[1];
+                goalDiffScore += points[2];
             }
-            userRanking.push({naam: user_name, score: baseScore});
+            let totalScore = winnerScore + goalsAjaxScore + goalDiffScore
+            userRanking.push({naam: user_name, score: totalScore, wS: winnerScore, gA: goalsAjaxScore, gD: goalDiffScore});
         }
         userRanking.sort((a, b) => b.score - a.score);
 
         var ranking = {};
 
         for (var i = 0; i < userRanking.length; i++){
-            ranking[userRanking[i].naam] = userRanking[i].score;
+            ranking[userRanking[i].naam] = [userRanking[i].score, userRanking[i].wS, userRanking[i].gA, userRanking[i].gD];
         }
 
         return ranking;
@@ -546,13 +406,13 @@
     }
 
     function getPredictionPoints(prediction, finalScore, ajaxPlaysHome) {
-        if (prediction == "" || finalScore == ""){
-            return 0;
-        } else if (prediction == finalScore) {
-            return 3;
+        if (prediction === "" || finalScore === ""){
+            return [0, 0, 0];
+        } else if (prediction === finalScore) {
+            return [1, 1, 1];
         }
 
-        var points = 0;
+        var points = [0, 0, 0];
 
         const predictedScore = prediction.split("-");
         const predictedHomeGoals = predictedScore[0];
@@ -567,11 +427,11 @@
         // 1 point if winner is correct
 
         if (predictedHomeGoals > predictedAwayGoals && realizedHomeGoals > realizedAwayGoals) {
-            points += 1;
-        } else if (predictedHomeGoals == predictedAwayGoals && realizedHomeGoals == realizedAwayGoals) {
-            points += 1;
+            points[0] = 1;
+        } else if (predictedHomeGoals === predictedAwayGoals && realizedHomeGoals === realizedAwayGoals) {
+            points[0] = 1;
         }  else if (predictedHomeGoals < predictedAwayGoals && realizedHomeGoals < realizedAwayGoals) {
-            points += 1;
+            points[0] = 1;
         }
 
         // 1 point if Ajax goals is correct
@@ -579,13 +439,13 @@
         const awayGoalsCorrect = predictedAwayGoals == realizedAwayGoals;
 
         if ( (ajaxPlaysHome && homeGoalsCorrect) || (!ajaxPlaysHome & awayGoalsCorrect)) {
-            points += 1;
+            points[1] = 1;
         }
 
         // 1 point if goalDiff is correct
 
-        if (predictedDiff == realizedDiff) {
-            points += 1;
+        if (predictedDiff === realizedDiff) {
+            points[2] = 1;
         }
 
         return points
@@ -672,21 +532,27 @@
 
         console.log("fill ranking table");
         // fill ranking table
-        let userRanking = 1;
 
         const rankingTable = document.getElementById("ranking_table");
 
-        for (const [userName, userScore] of Object.entries(ranking)) {
+        for (const [userName, userScores] of Object.entries(ranking)) {
             const tr = rankingTable.insertRow(-1)
-            const rankingCell = tr.insertCell(0)
-            rankingCell.innerHTML = userRanking;
 
-            const userCell = tr.insertCell(1);
+            const userCell = tr.insertCell(0);
             userCell.innerHTML = userName;
 
-            const scoreCell = tr.insertCell(2);
-            scoreCell.innerHTML = userScore;
-            userRanking += 1;
+            const scoreWinnerCell = tr.insertCell(1);
+            scoreWinnerCell.innerHTML = userScores[1];
+
+            const scoreAjaxCell = tr.insertCell(2);
+            scoreAjaxCell.innerHTML = userScores[2];
+
+            const scoreGoalDiffCell = tr.insertCell(3);
+            scoreGoalDiffCell.innerHTML = userScores[3];
+
+            const totalScoreCell = tr.insertCell(4);
+            totalScoreCell.innerHTML = userScores[0];
+
         }
 
         // fill attendance ranking table
@@ -747,7 +613,7 @@
         while (table.rows.length > startRow) {
             table.deleteRow(startRow)
         }
-        
+
     }
 
     function loadUserWindow(){
