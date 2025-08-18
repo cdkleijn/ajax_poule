@@ -321,6 +321,18 @@
         }
     }
 
+    function getCurrentMatch(matches){
+        const currentDate = new Date();
+
+        for (const [key, value] of Object.entries(matches)){
+            if (value["kickoffTime"].toDate() < currentDate && value["finalScore"] === ""){
+                return value;
+            }
+        }
+
+        return null;
+    }
+
     function timestampToFullDateRepr(timestamp){
         const dateObj = timestamp.toDate();
 
@@ -477,27 +489,37 @@
         const matches = await getSortedMatches();
 
         nextMatch = getNextMatch(matches);
+        const currentMatch = getCurrentMatch(matches);
+
+        let tableMatches;
+
+        if (currentMatch === null) {
+            tableMatches = [nextMatch]
+        } else {
+            tableMatches = [currentMatch, nextMatch]
+        }
 
         const allPredictions = await getAllPredictions();     // dict with matchId als key
-        const matchPredictions = allPredictions[nextMatch["id"]] ?? {};
-        const authuserPrediction = matchPredictions[auth.currentUser.uid] ?? ["", ""];
-        document.getElementById("nextPredictionId").value = authuserPrediction[1] ?? "";
 
         const ranking = getRanking(users, matches, allPredictions);
         const attendanceRanking = getAttendanceRanking(users, matches);
 
         // Fill Match Table
+        // Show at most current and upcoming match
         const matchTable = document.getElementById("match_table");
-        var row = matchTable.insertRow(1);
-        var dateCell = row.insertCell(0);
-        var homeTeamCell = row.insertCell(1);
-        var awayTeamCell = row.insertCell(2);
+        for (let i=0; i < tableMatches.length; i++){
 
-        const formattedDate = timestampToFullDateRepr(nextMatch["kickoffTime"]);
+            let match = tableMatches[i];
+            let row = matchTable.insertRow(i+1);
+            let dateCell = row.insertCell(0);
+            let homeTeamCell = row.insertCell(1);
+            let awayTeamCell = row.insertCell(2);
 
-        dateCell.innerHTML = formattedDate;
-        homeTeamCell.innerHTML = nextMatch["home_team"];
-        awayTeamCell.innerHTML = nextMatch["away_team"];
+            dateCell.innerHTML = timestampToFullDateRepr(match["kickoffTime"]);
+            homeTeamCell.innerHTML = match["home_team"];
+            awayTeamCell.innerHTML = match["away_team"];
+
+        }
 
         // Fill Prediction Table by looping over users and retrieving their prediction (if present)
 
@@ -511,24 +533,34 @@
         }
         predictionTable.appendChild(headerRow);
 
-        const predictionRow = document.createElement("tr");
-        for (const [key, value] of Object.entries(users)) {
-            const td = document.createElement("td");
-            const userPrediction = matchPredictions[value] ?? ["", ""];
-            if (key === auth.currentUser.displayName) {
-                const inputField = document.createElement("input");
-                inputField.setAttribute("type", "text");
-                inputField.id = "prediction_field";
-                inputField.value = userPrediction[0];
-                inputField.background
-                td.appendChild(inputField);
-                td.style.backgroundColor = '#D2122E'
-            } else {
-                td.textContent = userPrediction[0];
+        for (let i=0; i<tableMatches.length; i++) {
+
+            let match = tableMatches[i];
+            let matchPredictions = allPredictions[match["id"]] ?? {};
+
+            let row = predictionTable.insertRow(i+1);
+
+            for (const [key, value] of Object.entries(users)) {
+
+                let userPrediction = matchPredictions[value] ?? ["", ""];
+                let cell = row.insertCell(-1);
+
+                if (i === tableMatches.length - 1 && key === auth.currentUser.displayName) {
+                    document.getElementById("nextPredictionId").value = userPrediction[1] ?? "";
+
+                    const inputField = document.createElement("input");
+                    inputField.setAttribute("type", "text");
+                    inputField.id = "prediction_field";
+                    inputField.value = userPrediction[0];
+                    cell.appendChild(inputField);
+                    cell.style.backgroundcolor = '#D2122E'
+                } else {
+                    cell.textContent = userPrediction[0];
+                }
+
             }
-            predictionRow.appendChild(td);
+
         }
-        predictionTable.appendChild(predictionRow);
 
         console.log("fill ranking table");
         // fill ranking table
@@ -627,18 +659,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
