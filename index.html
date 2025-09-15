@@ -193,9 +193,6 @@
     let allPredictions;     // dict with matchId als key
     let ranking;
     let attendanceRanking;
-    let matchesTable;
-
-    await setGlobals();
 
     // --- Authentication Event Listeners ---
 
@@ -206,6 +203,7 @@
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             document.getElementById("userName").textContent = auth.currentUser.displayName;
+            await setGlobals();
             loadPredictionWindow();
             document.getElementById("menuItems").style.display = "block";
         } catch (error) {
