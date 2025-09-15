@@ -107,6 +107,11 @@ button {
     margin-bottom: 20px;
 }
 
+.table-container {
+    overflow-x: auto; /* Zorgt voor de horizontale scrollbalk */
+    width: 100%; /* Zorgt ervoor dat de container de volledige breedte van de parent inneemt */
+}
+
 .prediction-tables {
     width: 50%;
     border-collapse: collapse;
