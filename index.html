@@ -287,13 +287,14 @@
 
         let score;
 
-        try {
-            score = document.getElementById(inputFieldName).value;
-        }
-        catch(err) {
+        const inputField = document.getElementById(inputFieldName);
+
+        if (inputField.value !== undefined && inputField.value !== null) {
+            score = inputField.value;
+        } else {
             score = document.getElementById(hiddenFieldName).value;
         }
-
+        
         return score;
     }
 
