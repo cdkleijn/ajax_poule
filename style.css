@@ -1,22 +1,63 @@
 body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
     margin: 0;
+    padding: 0;
 }
+
+.mainContainer {
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-form {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Ruimte tussen de elementen */
+}
+
+.score-input-container label {
+    font-weight: bold;
+}
+
+.score-input-container input {
+    width: 50px; /* Maak de invoervelden smaller */
+    text-align: center;
+}
+
+.small-button {
+    padding: 8px 12px; /* Kleinere opvulling */
+    font-size: 0.7em; /* Kleinere lettergrootte */
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #D2122E;
+    color: white;
+    border: none;
+    margin-top: 15px;
+}
+
+ul {
+    list-style-position: inside;
+}
+
 h2 {
-    font-weight: normal;
-    font-size: 14px;
-}
-
-table{
-
-    font-size: 15px;
-    border-collapse: collapse;
-
-}
-
-th, td {
-
-    border: 1px solid black;
-
+    font-size: 20px;
+    text-align: center;
 }
 
 input {
@@ -28,80 +69,24 @@ input {
     width: 45px;
 }
 
-#userDiv {
-    margin: 20px auto;
-    padding: 20px;
-    max-width: 500px;
-    background-color: grey;
-    border-radius: 8px;
-}
-
-#userInfoTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-#userInfoTable tr {
-    padding: 10px;
-}
-
-#userInfoTable td {
-    padding: 10px;
-    text-align: left;
-}
-
-#userInfoTable td:first-child {
-    font-weight: bold;
-}
-
-#userInfoTable input {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-
-button.dropbtn {
-    background: none;
-    border: none;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
 .navbar {
+    display: flex;
+    justify-content: center;
     background-color: #D2122E;
-    overflow: hidden;
-    font-family: "ROBOTO";
-    font-weight: bold;
-    font-size: 16px;
-}
-.navbar button {
-    float: right;
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-.navbar h3 {
-    float: left;
-    display: block;
-    color: white;
-    padding: 14px 16px;
-    text-align: center;
-    text-decoration: none;
-    margin-top: 0;
+    padding: 10px;
 }
 
-.user-icon {
-    margin-right: 10px;
+.navbar a {
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
 }
 
 .login-window {
@@ -115,40 +100,34 @@ button {
     margin-left: 5px;
 }
 
-#match_prediction {
-    margin-top: 20px;
-}
-
-.tables-container {
-    display: flex;
-    gap: 20px; /* Ruimte tussen de tabellen */
+.section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
 .prediction-tables {
-    border: 1px solid #ccc;
-    text-align: center;
-    padding: 5px;
+    width: 50%;
     border-collapse: collapse;
-    margin-left: 5px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.prediction-tables caption {
-    margin-bottom: 10px;
+.prediction-tables th, .prediction-tables td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
 }
 
 .prediction-tables th {
-    font-weight: bold;
-    padding: 3px;
-}
-
-.prediction-tables td {
-    padding: 3px;
-}
-
-.prediction-tables input {
     background-color: #D2122E;
     color: white;
-    border: none;
-    border-radius: 4px;
-    text-align: center;
 }
+
+.prediction-tables tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+
