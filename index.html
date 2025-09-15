@@ -1,105 +1,149 @@
-<html lang="en">
-<meta name="viewport" content="width=device-width, initial_scale=1.0">
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 <head>
-    <title>Soccer Predictions</title>
+    <title>Ajax Poule vak 402</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
-    <h3> Ajax Poule vak 402 </h3>
     <div id="loginDiv">
-        <button class="dropbtn" id="loginButton">
-            <i class="fas fa-user user-icon dropbtn" id="userIcon"> </i> Login
-        </button>
+        <a href="#" id="loginButton">
+            <i class="fas fa-user user-icon" id="userIcon"> </i> Login
+        </a>
+    </div>
+    <div id="menuItems" hidden>
+        <a href="#" id="homeButton">Home</a>
+        <a href="#" id="allMatchesButton">Wedstrijden</a>
+        <a href="#" id="rulesButton">Regels</a>
+        <a href="#" id="logOutButton">Log Uit</a>
     </div>
     <div id="userInfoDiv" style="display: none;">
-        <button class="dropbtn" id="userInfoButton">
-            <i class="fas fa-user user-icon dropbtn" id="userInfoIcon"></i> <span id="userName"> Gebruikersnaam </span>
-        </button>
+        <a href="#">
+            <i class="fas fa-user user-icon" id="userInfoIcon"></i> <span id="userName"> Gebruikersnaam </span>
+        </a>
     </div>
 </div>
 
-<div id="mainContainer">
-</div>
+<div id="mainContainer" class="mainContainer">
 
-<div class="login-window" id="auth-section" style="display: none;">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button id="signInButton">Log in</button>
-    <button id="updatePassword"> Reset wachtwoord </button>
-</div>
 
-<div id="match_prediction" style="display: none;">
-    <div class="tables-container">
-        <table id="match_table" class="prediction-tables">
-            <caption> Eerstvolgende wedstrijd </caption>
-            <tr>
-                <th> Datum </th>
-                <th> Thuis </th>
-                <th> Uit </th>
-            </tr>
-            <tbody></tbody>
-        </table>
-        <table id="prediction_table" class="prediction-tables">
-            <caption> Voorspellingen </caption>
-            <tbody></tbody>
-        </table>
+    <div class="login-window" id="auth-section" style="display: none;">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="signInButton">Log in</button>
+        <button id="updatePassword"> Reset wachtwoord </button>
     </div>
-    <button id="addPrediction" style="margin-top: 20px"> Verstuur voorspelling </button>
-    <div class="tables-container" style="margin-top: 20px">
-        <table id="ranking_table" class="prediction-tables">
-            <caption> Stand </caption>
-            <tr>
-                <th> Naam </th>
-                <th> Winnaar </th>
-                <th> Ajax Goals </th>
-                <th> Doelsaldo </th>
-                <th> Totaal </th>
-            </tr>
-            <tbody></tbody>
-        </table>
-        <table id="attendance_ranking_table" class="prediction-tables">
-            <caption> Aanwezigheid </caption>
-            <tr>
-                <th> Naam </th>
-                <th> Aantal </th>
-            </tr>
-            <tbody></tbody>
-        </table>
+
+    <div id="rules" style="display: none;">
+        <div id="general_rules">
+            <h3> Algemeen </h3>
+            <ul>
+                <li> Voorspellingen kunnen tot de officiële aanvang worden ingevuld </li>
+                <li> Men dient altijd een overwinning voor Ajax te voorspellen </li>
+                <li> Men dient geen voorspelling te doen die reeds gedaan is</li>
+            </ul>
+            <h3> Puntentelling </h3>
+            <ul>
+                <li> Winnaar goed: 1 punt </li>
+                <li> Juiste aantal doelpunten van Ajax: 1 punt </li>
+                <li> Juiste verschil in doelpunten: 1 punt </li>
+            </ul>
+            <p> Voorbeeld: je voorspelt 2-1 voor Ajax en het wordt helaas 2-3.
+                Dan krijg je 1 punt, omdat je het aantal doelpunten van Ajax goed hebt voorspeld.</p>
+            <h3> Aanwezigheid </h3>
+            <ul>
+                <li> Er zijn bonuspunten te verdienen door veel wedstrijden bij te wonen. </li>
+                <li> De nummer 1 krijgt 3 bonuspunten, de nummer 2 krijgt er 2 en de nummer 3 krijgt er 1. </li>
+                <li> Bij gelijke stand krijgt ieder het aantal punten dat hoort bij de gedeelde plek. </li>
+            </ul>
+            <p> Voorbeeld: Jonah en Tim worden gedeeld 1e en Koen en Bart gedeeld 3e. Dan krijgen Jonah en Tim allebei 3 punten en Koen en Bart krijgen allebei 1 punt.</p>
+        </div>
     </div>
-    <button id="refreshPrediction" style="margin-top: 20px"> Refresh  </button>
-</div>
 
-<div id="userDiv" style="display: none;">
-    <div id="userData">
-        <table id="userInfoTable">
-            <tr>
-                <td><strong>Gebruikersnaam</strong></td>
-                <td id="displayName">Laden...</td>
-            </tr>
-            <tr>
-                <td><strong>Emailadres</strong></td>
-                <td id="userEmail">Laden...</td>
-            </tr>
-            <tr>
-                <td><strong>Nieuw e-mailadres</strong></td>
-                <td><input type="email" id="newEmail" placeholder="Nieuw e-mailadres..."></td>
-            </tr>
-        </table>
+    <div id="match_prediction" style="display: none;">
+        <div>
+            <form class="prediction-form" action="#" method="post">
+                <p class="match-date" id="next_match_date"></p>
+                <div class="score-input-container">
+                    <label for="home_score" id="home_team"></label>
+                    <input type="number" id="home_score" name="home_score" min="0" required>
+                    <span>-</span>
+                    <input type="number" id="away_score" name="away_score" min="0" required>
+                    <label for="away_score" id="away_team"></label>
+                </div>
+                <button class="small-button" id="addPrediction">Verstuur Voorspelling</button>
+            </form>
+        </div>
+        <hr>
 
-        <button id="updateUserInfoButton" style="margin-top: 20px">Update Gebruikersinformatie</button>
-        <button id="signOutButton" style="margin-top: 20px">Log uit</button>
-        <button id="backToPrediction" style="margin-top: 20px"> Terug </button>
+        <div class="section">
+            <h2> Voorspellingen </h2>
+            <table id="prediction_table" class="prediction-tables">
+                <tr>
+                    <th> Deelnemer </th>
+                    <th> Voorspelling </th>
+                </tr>
+                <tbody></tbody>
+            </table>
+        </div>
+        <hr>
 
+        <div class="section" style="margin-top: 20px">
+            <h2> Stand </h2>
+            <table id="ranking_table" class="prediction-tables">
+                <tr>
+                    <th> Naam </th>
+                    <th> Winnaar </th>
+                    <th> Ajax Goals </th>
+                    <th> Doelsaldo </th>
+                    <th> Totaal </th>
+                </tr>
+                <tbody></tbody>
+            </table>
+        </div>
+        <hr>
+        <div class="section">
+            <h2> Aanwezigheid </h2>
+            <table id="attendance_ranking_table" class="prediction-tables">
+                <tr>
+                    <th> Naam </th>
+                    <th> Aantal </th>
+                </tr>
+                <tbody></tbody>
+            </table>
+        </div>
+        <hr>
     </div>
-</div>
 
+    <div id="matchesDiv" style="display: none">
+        <div class="section">
+            <h2> Wedstrijden </h2>
+            <table id="allMatches" class="prediction-tables" style="width: 100%">
+                <tr>
+                    <th> Ronde </th>
+                    <th> Datum </th>
+                    <th> Thuis </th>
+                    <th> Uit </th>
+                    <th> Uitslag </th>
+                </tr>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 
 <div id="nextPredictionId" style="display: none;"></div>
+<div id="predictedHomeScore" style="display: none;"></div>
+<div id="predictedAwayScore" style="display: none;"></div>
+
 
 <script type="module">
     // Import the core Firebase App and Cloud Firestore services
@@ -132,27 +176,22 @@
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginButton = document.getElementById("loginButton");
-    const userInfoButton = document.getElementById("userInfoButton");
     const signInButton = document.getElementById('signInButton');
-    const signOutButton = document.getElementById('signOutButton');
-    const userInfoDiv = document.getElementById('user-info');
     const authSectionDiv = document.getElementById('auth-section');
-    const userIdSpan = document.getElementById('userId');
     const addPredictionButton = document.getElementById("addPrediction");
     const resetPasswordButton = document.getElementById("updatePassword");
-    const returnButton = document.getElementById("backToPrediction");
 
-    var nextMatch = "";
+    // Global variables
 
-    window.addEventListener("load", async (event) => {
-        try {
-            await signOut(auth);
-            // No need to manually update UI here, onAuthStateChanged will handle it
-        } catch {
-            console.log("No user signed in");
-        }
-        resetMainContainer();
-    });
+    let matches;
+    let nextMatch;
+    let users;
+    let allPredictions;     // dict with matchId als key
+    let ranking;
+    let attendanceRanking;
+    let matchesTable;
+
+    await setGlobals();
 
     // --- Authentication Event Listeners ---
 
@@ -162,28 +201,31 @@
         const password = passwordInput.value;
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            document.getElementById("userName").textContent = auth.currentUser.displayName;
             loadPredictionWindow();
+            document.getElementById("menuItems").style.display = "block";
         } catch (error) {
             console.error("Sign in error:", error);
         }
     });
 
     // Sign Out
-    signOutButton.addEventListener('click', async () => {
+    document.getElementById("logOutButton").addEventListener("click", async() => {
         try {
             await signOut(auth);
-            // No need to manually update UI here, onAuthStateChanged will handle it
+            resetMainContainer("loginDiv");
+            loadLoginWindow();
         } catch (error) {
-            authMessage.textContent = `Error signing out: ${error.message}`;
             console.error("Sign out error:", error);
+            loadLoginWindow();
         }
     });
 
-    addPredictionButton.addEventListener("click", async () => {
-        const prediction = document.getElementById("prediction_field").value;
-        const scores = prediction.split("-");
-        const homeScore = parseInt(scores[0].trim());
-        const awayScore = parseInt(scores[1].trim());
+    addPredictionButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const homeScore = getPredictedScore("home");
+        const awayScore = getPredictedScore("away");
+
         const matchid = nextMatch.id;
         const userid = auth.currentUser.uid;
 
@@ -195,12 +237,12 @@
             userId: userid,
         }
 
+        console.log(predictionData);
+
         if (document.getElementById("nextPredictionId").value !== ""){
             await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
             alert("Voorspelling opgeslagen!");
         } else {
-
-
             try {
                 await addDoc(collection(db, "Predictions"), predictionData);
 
@@ -215,26 +257,6 @@
         loadLoginWindow();
     });
 
-    document.getElementById("refreshPrediction").addEventListener("click", () => {
-        loadPredictionWindow();
-    });
-
-    userInfoButton.addEventListener("click", () => {
-        ;
-    });
-
-    updateUserInfoButton.addEventListener("click", () => {
-        const newDisplayName = document.getElementById("newDisplayName").value;
-        const newEmail = document.getElementById("newEmail").value;
-        if (newDisplayName !== ""){
-            updateProfile(auth.currentUser, {displayName: newDisplayName});
-            alert("Gebruikersnaam bijgewerkt");
-        }
-        if (newEmail !== ""){
-            updateProfile(auth.currentUser, {email: newEmail});
-            alert("Gebruikersnaam bijgewerkt");
-        }
-    });
 
     resetPasswordButton.addEventListener("click", () => {
         const userMail = document.getElementById("email").value;
@@ -251,10 +273,29 @@
         }
     });
 
-    returnButton.addEventListener("click", () => {
-        loadPredictionWindow();
-    });
+    function getPredictedScore(scoreType) {
+        let inputFieldName;
+        let hiddenFieldName;
 
+        if (scoreType === "home") {
+            inputFieldName = "home_score";
+            hiddenFieldName = "predictedHomeScore";
+        } else {
+            inputFieldName = "away_score";
+            hiddenFieldName = "predictedAwayScore";
+        }
+
+        let score;
+
+        try {
+            score = document.getElementById(inputFieldName).value;
+        }
+        catch(err) {
+            score = document.getElementById(hiddenFieldName).value;
+        }
+
+        return score;
+    }
 
     async function loadDataFromTable(tableName){
         const coll = collection(db, tableName);
@@ -267,6 +308,15 @@
 
         return resultList;
 
+    }
+
+    async function setGlobals() {
+        matches = await getSortedMatches();
+        nextMatch = getNextMatch(matches);
+        users = await getUsers();
+        allPredictions = await getAllPredictions();     // dict with matchId als key
+        ranking = getRanking(users, matches, allPredictions);
+        attendanceRanking = getAttendanceRanking(users, matches);
     }
 
 
@@ -356,7 +406,7 @@
         }
 
         for (const [match_id, match_details] of Object.entries(matches)){
-            const ajaxPlayingHome = (match_details["home_team"] == "Ajax");
+            const ajaxPlayingHome = (match_details["home_team"] === "Ajax");
             if (ajaxPlayingHome) {
                 attendees = match_details["attendees"] ?? "";
                 for (const [user_name, user_id] of Object.entries(users)){
@@ -447,10 +497,10 @@
         }
 
         // 1 point if Ajax goals is correct
-        const homeGoalsCorrect = predictedHomeGoals == realizedHomeGoals;
-        const awayGoalsCorrect = predictedAwayGoals == realizedAwayGoals;
+        const homeGoalsCorrect = predictedHomeGoals === realizedHomeGoals;
+        const awayGoalsCorrect = predictedAwayGoals === realizedAwayGoals;
 
-        if ( (ajaxPlaysHome && homeGoalsCorrect) || (!ajaxPlaysHome & awayGoalsCorrect)) {
+        if ( (ajaxPlaysHome && homeGoalsCorrect) || (!ajaxPlaysHome && awayGoalsCorrect)) {
             points[1] = 1;
         }
 
@@ -485,10 +535,11 @@
     async function loadPredictionTables() {
         console.log("loading prediction table");
 
-        const users = await getUsers();
-        const matches = await getSortedMatches();
+        // set next_match_date, home_team and away_team
+        document.getElementById("next_match_date").textContent = timestampToFullDateRepr(nextMatch["kickoffTime"]);
+        document.getElementById("home_team").textContent = nextMatch["home_team"];
+        document.getElementById("away_team").textContent = nextMatch["away_team"];
 
-        nextMatch = getNextMatch(matches);
         const currentMatch = getCurrentMatch(matches);
 
         let tableMatches;
@@ -499,65 +550,39 @@
             tableMatches = [currentMatch, nextMatch]
         }
 
-        const allPredictions = await getAllPredictions();     // dict with matchId als key
-
-        const ranking = getRanking(users, matches, allPredictions);
-        const attendanceRanking = getAttendanceRanking(users, matches);
-
-        // Fill Match Table
-        // Show at most current and upcoming match
-        const matchTable = document.getElementById("match_table");
-        for (let i=0; i < tableMatches.length; i++){
-
-            let match = tableMatches[i];
-            let row = matchTable.insertRow(i+1);
-            let dateCell = row.insertCell(0);
-            let homeTeamCell = row.insertCell(1);
-            let awayTeamCell = row.insertCell(2);
-
-            dateCell.innerHTML = timestampToFullDateRepr(match["kickoffTime"]);
-            homeTeamCell.innerHTML = match["home_team"];
-            awayTeamCell.innerHTML = match["away_team"];
-
-        }
-
         // Fill Prediction Table by looping over users and retrieving their prediction (if present)
 
         const predictionTable = document.getElementById("prediction_table");
-
-        const headerRow = document.createElement("tr");
-        for (const [key, value] of Object.entries(users)) {
-            const th = document.createElement("th");
-            th.textContent = key;
-            headerRow.appendChild(th);
-        }
-        predictionTable.appendChild(headerRow);
 
         for (let i=0; i<tableMatches.length; i++) {
 
             let match = tableMatches[i];
             let matchPredictions = allPredictions[match["id"]] ?? {};
 
-            let row = predictionTable.insertRow(i+1);
-
             for (const [key, value] of Object.entries(users)) {
 
+                let row = predictionTable.insertRow(-1);
+                let cell = row.insertCell();
+                cell.textContent = key;
+
                 let userPrediction = matchPredictions[value] ?? ["", ""];
-                let cell = row.insertCell(-1);
+                cell = row.insertCell();
 
-                if (i === tableMatches.length - 1 && key === auth.currentUser.displayName) {
-                    document.getElementById("nextPredictionId").value = userPrediction[1] ?? "";
-
-                    const inputField = document.createElement("input");
-                    inputField.setAttribute("type", "text");
-                    inputField.id = "prediction_field";
-                    inputField.value = userPrediction[0];
-                    cell.appendChild(inputField);
-                    cell.style.backgroundcolor = '#D2122E'
-                } else {
-                    cell.textContent = userPrediction[0];
+                cell.textContent = userPrediction[0];
+                if (value === auth.currentUser.uid) {
+                    if (userPrediction[0] !== "") {
+                        let home_score = userPrediction[0].split("-")[0];
+                        let away_score = userPrediction[0].split("-")[1];
+                        document.getElementById("home_score").value = home_score;
+                        document.getElementById("predictedHomeScore").value = home_score;
+                        document.getElementById("away_score").value = away_score;
+                        document.getElementById("predictedAwayScore").value = away_score;
+                        document.getElementById("nextPredictionId").value = userPrediction[1];
+                    } else {
+                        document.getElementById("predictedHomeScore").value = 0;
+                        document.getElementById("predictedAwayScore").value = 0;
+                    }
                 }
-
             }
 
         }
@@ -604,32 +629,104 @@
         document.getElementById("match_prediction").hidden = false;
     }
 
-    function resetMainContainer(){
-        while (mainContainer.firstChild) {
-            mainContainer.removeChild(mainContainer.firstChild);
+    function resetMainContainer(activeDivName){
+        for (let i = 0; i < mainContainer.children.length; i++) {
+            const child = mainContainer.children[i];
+            if (child.id !== activeDivName) {
+                child.style.display = "none";
+            } else {
+                child.style.display = "block";
+            }
         }
+
+        resetTable("prediction_table", false);
+        resetTable("ranking_table", false);
+        resetTable("attendance_ranking_table", false);
+        resetTable("allMatches", false);
     }
 
     function loadLoginWindow(){
-        resetMainContainer();
+        resetMainContainer("loginDiv");
         authSectionDiv.style.display = "block";
         mainContainer.appendChild(authSectionDiv);
     }
 
     function loadPredictionWindow(){
-        resetTable("match_table", false)
-        resetTable("prediction_table", true)
-        resetTable("ranking_table", false)
-        resetTable("attendance_ranking_table", false)
-        resetMainContainer();
+        resetMainContainer("predictionDiv");
 
         loadPredictionTables();
         predictionDiv.style.display = "block";
         mainContainer.appendChild(predictionDiv);
         document.getElementById("loginDiv").style.display = "none";
         document.getElementById("userInfoDiv").style.display = "block";
-        document.getElementById("userName").textContent = auth.currentUser.displayName;
-        document.getElementById("userEmail").textContent = auth.currentUser.email;
+    }
+
+    document.getElementById("homeButton").addEventListener("click", async () => {
+        loadPredictionWindow();
+    });
+
+    document.getElementById("rulesButton").addEventListener("click", () => {
+       resetMainContainer("rules");
+       document.getElementById("rules").style.display = "block";
+    });
+
+
+    document.getElementById("allMatchesButton").addEventListener("click", () => {
+        resetMainContainer("matchesDiv");
+        getMatchesTable(users, matches, allPredictions);
+        document.getElementById("matchesDiv").style.display = "block";
+        mainContainer.appendChild(document.getElementById("matchesDiv"))
+    });
+
+    function getMatchesTable(users, matches, allPredictions) {
+
+        const matchTable = document.getElementById("allMatches");
+        const headerRow = matchTable.rows[0];
+
+        for (const username of Object.keys(users)) {
+            if (!headerRow.innerHTML.includes(username)) {
+                let th = document.createElement("th");
+                th.textContent = username;
+                headerRow.appendChild(th);
+            }
+        }
+
+        if (!headerRow.innerHTML.includes("Aanwezig")) {
+            let th = document.createElement("th");
+            th.textContent = "Aanwezig";
+            headerRow.appendChild(th);
+        }
+
+        let round = 1;
+
+        for (const currentMatch of Object.values(matches)) {
+            let tr = document.createElement("tr");
+
+            let matchDate = timestampToFullDateRepr(currentMatch["kickoffTime"]);
+
+            let rowData = [round, matchDate, currentMatch["home_team"], currentMatch["away_team"],
+                currentMatch["finalScore"]];
+
+            let matchPredictions = allPredictions[currentMatch["id"]] ?? {};
+
+            for (const userid of Object.values(users)) {
+                let userPrediction = matchPredictions[userid] ?? ["", ""];
+                rowData.push(userPrediction[0]);
+            }
+
+            let attendance = currentMatch["attendees"] ?? "";
+            rowData.push(attendance);
+
+            for (const data of rowData) {
+                let cell = tr.insertCell();
+                cell.textContent = data;
+            }
+
+            matchTable.appendChild(tr);
+            round += 1;
+
+        }
+
     }
 
     function resetTable(tableName, resetHeaders) {
@@ -648,14 +745,22 @@
 
     }
 
-    function loadUserWindow(){
-        resetMainContainer();
-        const userDiv = document.getElementById("userDiv");
-        userDiv.style.display = "block";
-        mainContainer.appendChild(userDiv);
-    }
-
 
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
