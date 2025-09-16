@@ -37,8 +37,8 @@
     <div class="login-window" id="auth-section" style="display: none;">
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
-        <button id="signInButton">Log in</button>
-        <button id="updatePassword"> Reset wachtwoord </button>
+        <button id="signInButton" class="small-button">Log in</button>
+        <button id="updatePassword" class="small-button"> Reset wachtwoord </button>
     </div>
 
     <div id="rules" style="display: none;">
@@ -238,17 +238,16 @@
             timestamp: new Date(),
             userId: userid,
         }
-
-        console.log(predictionData);
-
+        
         if (document.getElementById("nextPredictionId").value !== ""){
             await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
             alert("Voorspelling opgeslagen!");
+            await refreshPredictionTables();
         } else {
             try {
                 await addDoc(collection(db, "Predictions"), predictionData);
-
                 alert("Voorspelling opgeslagen!");
+                await refreshPredictionTables();
             } catch (error) {
 
                 alert(error);
@@ -320,6 +319,14 @@
         allPredictions = await getAllPredictions();     // dict with matchId als key
         ranking = getRanking(users, matches, allPredictions);
         attendanceRanking = getAttendanceRanking(users, matches);
+    }
+
+    async function refreshPredictionTables(){
+        allPredictions = await getAllPredictions();
+        resetTable("prediction_table", false);
+        fillPredictionTable();
+        predictionDiv.style.display = "block";
+        mainContainer.appendChild(predictionDiv);
     }
 
 
@@ -535,6 +542,39 @@
         return predictionsDict;
     }
 
+    function fillPredictionTable() {
+        const predictionTable = document.getElementById("prediction_table");
+
+        let matchPredictions = allPredictions[nextMatch["id"]] ?? {};
+
+        for (const [key, value] of Object.entries(users)) {
+
+            let row = predictionTable.insertRow(-1);
+            let cell = row.insertCell();
+            cell.textContent = key;
+
+            let userPrediction = matchPredictions[value] ?? ["", ""];
+            cell = row.insertCell();
+
+            cell.textContent = userPrediction[0];
+            if (value === auth.currentUser.uid) {
+                if (userPrediction[0] !== "") {
+                    let home_score = userPrediction[0].split("-")[0];
+                    let away_score = userPrediction[0].split("-")[1];
+                    document.getElementById("home_score").value = home_score;
+                    document.getElementById("predictedHomeScore").value = home_score;
+                    document.getElementById("away_score").value = away_score;
+                    document.getElementById("predictedAwayScore").value = away_score;
+                    document.getElementById("nextPredictionId").value = userPrediction[1];
+                } else {
+                    document.getElementById("predictedHomeScore").value = 0;
+                    document.getElementById("predictedAwayScore").value = 0;
+                    document.getElementById("nextPredictionId").value = "";
+                }
+            }
+        }
+    }
+
     async function loadPredictionTables() {
         console.log("loading prediction table");
 
@@ -543,53 +583,7 @@
         document.getElementById("home_team").textContent = nextMatch["home_team"];
         document.getElementById("away_team").textContent = nextMatch["away_team"];
 
-        const currentMatch = getCurrentMatch(matches);
-
-        let tableMatches;
-
-        if (currentMatch === null) {
-            tableMatches = [nextMatch]
-        } else {
-            tableMatches = [currentMatch, nextMatch]
-        }
-
-        // Fill Prediction Table by looping over users and retrieving their prediction (if present)
-
-        const predictionTable = document.getElementById("prediction_table");
-
-        for (let i=0; i<tableMatches.length; i++) {
-
-            let match = tableMatches[i];
-            let matchPredictions = allPredictions[match["id"]] ?? {};
-
-            for (const [key, value] of Object.entries(users)) {
-
-                let row = predictionTable.insertRow(-1);
-                let cell = row.insertCell();
-                cell.textContent = key;
-
-                let userPrediction = matchPredictions[value] ?? ["", ""];
-                cell = row.insertCell();
-
-                cell.textContent = userPrediction[0];
-                if (value === auth.currentUser.uid) {
-                    if (userPrediction[0] !== "") {
-                        let home_score = userPrediction[0].split("-")[0];
-                        let away_score = userPrediction[0].split("-")[1];
-                        document.getElementById("home_score").value = home_score;
-                        document.getElementById("predictedHomeScore").value = home_score;
-                        document.getElementById("away_score").value = away_score;
-                        document.getElementById("predictedAwayScore").value = away_score;
-                        document.getElementById("nextPredictionId").value = userPrediction[1];
-                    } else {
-                        document.getElementById("predictedHomeScore").value = 0;
-                        document.getElementById("predictedAwayScore").value = 0;
-                        document.getElementById("nextPredictionId").value = "";
-                    }
-                }
-            }
-
-        }
+        fillPredictionTable();
 
         console.log("fill ranking table");
         // fill ranking table
