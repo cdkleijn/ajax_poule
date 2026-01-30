@@ -548,11 +548,12 @@
 
     function fillPredictionTable() {
         const predictionTable = document.getElementById("prediction_table");
+        let matchPredictions;
 
         if (nextMatch) {
-            let matchPredictions = allPredictions[nextMatch["id"]] ?? {};
+            matchPredictions = allPredictions[nextMatch["id"]] ?? {};
         } else {
-            let matchPredictions = {};
+            matchPredictions = {};
         }
 
         for (const [key, value] of Object.entries(users)) {
@@ -761,6 +762,7 @@
 </script>
 </body>
 </html>
+
 
 
 
