@@ -549,7 +549,7 @@
     function fillPredictionTable() {
         const predictionTable = document.getElementById("prediction_table");
 
-        if (!nextMatch) {
+        if (nextMatch) {
             let matchPredictions = allPredictions[nextMatch["id"]] ?? {};
         } else {
             let matchPredictions = {};
@@ -761,6 +761,7 @@
 </script>
 </body>
 </html>
+
 
 
 
