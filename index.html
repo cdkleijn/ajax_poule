@@ -566,6 +566,7 @@
 
             cell.textContent = userPrediction[0];
             if (value === auth.currentUser.uid) {
+                console.log(userPrediction);
                 if (userPrediction[0] !== "") {
                     let home_score = userPrediction[0].split("-")[0];
                     let away_score = userPrediction[0].split("-")[1];
@@ -760,6 +761,7 @@
 </script>
 </body>
 </html>
+
 
 
 
