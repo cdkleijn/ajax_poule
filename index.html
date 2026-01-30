@@ -208,6 +208,7 @@
             document.getElementById("menuItems").style.display = "block";
         } catch (error) {
             console.error("Sign in error:", error);
+            alert("Unknown username and/or password");
         }
     });
 
@@ -379,6 +380,7 @@
                 return value;
             }
         }
+        return null;
     }
 
     function getCurrentMatch(matches){
@@ -545,7 +547,11 @@
     function fillPredictionTable() {
         const predictionTable = document.getElementById("prediction_table");
 
-        let matchPredictions = allPredictions[nextMatch["id"]] ?? {};
+        if (!nextMatch) {
+            let matchPredictions = allPredictions[nextMatch["id"]] ?? {};
+        } else {
+            let matchPredictions = {};
+        }
 
         for (const [key, value] of Object.entries(users)) {
 
@@ -579,11 +585,16 @@
         console.log("loading prediction table");
 
         // set next_match_date, home_team and away_team
-        document.getElementById("next_match_date").textContent = timestampToFullDateRepr(nextMatch["kickoffTime"]);
-        document.getElementById("home_team").textContent = nextMatch["home_team"];
-        document.getElementById("away_team").textContent = nextMatch["away_team"];
 
-        fillPredictionTable();
+        if (!nextMatch) {
+            document.getElementById("match_prediction").hidden = true;
+        } else {
+            document.getElementById("next_match_date").textContent = timestampToFullDateRepr(nextMatch["kickoffTime"]);
+            document.getElementById("home_team").textContent = nextMatch["home_team"];
+            document.getElementById("away_team").textContent = nextMatch["away_team"];
+            fillPredictionTable();
+            document.getElementById("match_prediction").hidden = false;
+        }
 
         console.log("fill ranking table");
         // fill ranking table
@@ -747,6 +758,7 @@
 </script>
 </body>
 </html>
+
 
 
 
