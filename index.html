@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<head>
     <title>Ajax Poule vak 402</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -126,23 +124,37 @@
         <hr>
     </div>
 
-    <div id="matchesDiv" style="display: none">
-        <div class="section">
-            <h2> Wedstrijden </h2>
-            <div class="table-container">
-                <table id="allMatches" class="prediction-tables" style="width: 100%">
-                    <tr>
-                        <th> Ronde </th>
-                        <th> Datum </th>
-                        <th> Thuis </th>
-                        <th> Uit </th>
-                        <th> Uitslag </th>
-                    </tr>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+  <div id="matchesDiv" style="display: none">
+      <div class="section">
+          <h2> Wedstrijden </h2>
+          <button id="showAddMatchFormButton" style="display:none; margin-bottom: 10px;">Nieuwe Wedstrijd Toevoegen</button>
+          <div id="adminMatchForm" style="display:none; margin-top: 20px;">
+              <h3>Nieuwe Wedstrijd Toevoegen</h3>
+              <form id="matchForm">
+                  <label>Ronde: <input type="number" id="roundInput" required></label><br>
+                  <label>Datum & Tijd (YYYY-MM-DD HH:mm): <input type="text" id="dateTimeInput" placeholder="2024-07-01 20:00" required></label><br>
+                  <label>Thuis team: <input type="text" id="homeTeamInput" required></label><br>
+                  <label>Uit team: <input type="text" id="awayTeamInput" required></label><br>
+                  <label>Uitslag (optioneel, bv. 2-1): <input type="text" id="finalScoreInput" pattern="^\d+-\d+$"></label><br>
+                  <button type="submit">Wedstrijd opslaan</button>
+                  <button type="button" id="cancelAddMatchForm">Annuleren</button>
+              </form>
+          </div>
+          <div class="table-container">
+              <table id="allMatches" class="prediction-tables" style="width: 100%">
+                  <tr>
+                      <th> Ronde </th>
+                      <th> Datum </th>
+                      <th> Thuis </th>
+                      <th> Uit </th>
+                      <th> Uitslag </th>
+                      <!-- eventueel extra kolommen -->
+                  </tr>
+                  <tbody></tbody>
+              </table>
+          </div>
+      </div>
+  </div>
 
 </div>
 
@@ -696,6 +708,13 @@
         const matchTable = document.getElementById("allMatches");
         const headerRow = matchTable.rows[0];
 
+        // Voeg kolom "Acties" alleen als admin
+        if (auth.currentUser && auth.currentUser.email === adminEmail && !headerRow.innerHTML.includes("Acties")) {
+            let th = document.createElement("th");
+            th.textContent = "Acties";
+            headerRow.appendChild(th);
+        }
+
         for (const username of Object.keys(users)) {
             if (!headerRow.innerHTML.includes(username)) {
                 let th = document.createElement("th");
@@ -735,6 +754,15 @@
                 cell.textContent = data;
             }
 
+            // Voeg bewerk knop toe als admin
+            if (auth.currentUser && auth.currentUser.email === adminEmail) {
+                let actionCell = tr.insertCell();
+                let editButton = document.createElement("button");
+                editButton.textContent = "Bewerk uitslag";
+                editButton.addEventListener("click", () => openEditScoreDialog(currentMatch));
+                actionCell.appendChild(editButton);
+            }
+
             matchTable.appendChild(tr);
             round += 1;
 
@@ -758,10 +786,165 @@
 
     }
 
+  const showAddMatchFormButton = document.getElementById("showAddMatchFormButton");
+  const adminMatchForm = document.getElementById("adminMatchForm");
+  const cancelAddMatchFormButton = document.getElementById("cancelAddMatchForm");
+
+  // Functie om admin controls in Wedstrijden tab te tonen of verbergen
+  function updateAdminMatchControls() {
+      if (auth.currentUser && auth.currentUser.email === adminEmail && document.getElementById("matchesDiv").style.display === "block") {
+          showAddMatchFormButton.style.display = "inline-block";
+      } else {
+          showAddMatchFormButton.style.display = "none";
+          adminMatchForm.style.display = "none";
+      }
+  }
+
+  showAddMatchFormButton.addEventListener("click", () => {
+      adminMatchForm.style.display = "block";
+      showAddMatchFormButton.style.display = "none";
+  });
+
+  cancelAddMatchFormButton.addEventListener("click", () => {
+      adminMatchForm.style.display = "none";
+      showAddMatchFormButton.style.display = "inline-block";
+      matchForm.reset();
+  });
+
+  // Pas ook aan bij het openen van het Wedstrijden tabblad
+  document.getElementById("allMatchesButton").addEventListener("click", async () => {
+      resetMainContainer("matchesDiv");
+      getMatchesTable(users, matches, allPredictions);
+      document.getElementById("matchesDiv").style.display = "block";
+      mainContainer.appendChild(document.getElementById("matchesDiv"));
+      updateAdminMatchControls();
+  });
+
+  // Update admin controls ook na login en logout
+  onAuthStateChanged(auth, (user) => {
+      updateAdminMatchControls();
+  });
+
+    const adminEmail = "cd.kleijn@gmail.com"; 
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Toon gebruikersnaam etc.
+            document.getElementById("userName").textContent = user.displayName ?? user.email;
+    
+            // Controleer admin-rechten:
+            if (user.email === adminEmail) {
+                showAdminControls();
+            } else {
+                hideAdminControls();
+            }
+    
+            // Rest van je init code...
+        } else {
+            // Niet ingelogd
+            hideAdminControls();
+        }
+  });
+    
+  function showAdminControls() {
+      // Toon formulier om nieuwe wedstrijd toe te voegen en uitslagen te wijzigen
+      document.getElementById("adminMatchForm").style.display = "block";
+  }
+    
+  function hideAdminControls() {
+      document.getElementById("adminMatchForm").style.display = "none";
+  }
+
+  async function openEditScoreDialog(match) {
+      const newScore = prompt("Voer nieuwe uitslag in (bijv. 2-1):", match.finalScore);
+      if (newScore === null) return; // gebruiker annuleerde
+
+      if (!/^\d+-\d+$/.test(newScore.trim())) {
+          alert("Ongeldig formaat. Gebruik bv. 2-1");
+          return;
+      }
+
+      const newAttendees = prompt("Voer aanwezigen in (komma-gescheiden, bv. Jonah,Tim):", match.attendees ?? "");
+      if (newAttendees === null) return; // gebruiker annuleerde
+
+      try {
+          const matchRef = doc(db, "Matches", match.id);
+          await setDoc(matchRef, { 
+              finalScore: newScore.trim(),
+              attendees: newAttendees.trim()
+          }, { merge: true });
+          alert("Wedstrijdgegevens bijgewerkt!");
+
+          // Update lokaal en herlaad tabel
+          matches[match.id].finalScore = newScore.trim();
+          matches[match.id].attendees = newAttendees.trim();
+          resetTable("allMatches", false);
+          getMatchesTable(users, matches, allPredictions);
+
+          // Herbereken ranking en attendance
+          await setGlobals();
+      } catch (error) {
+          console.error("Fout bij bijwerken wedstrijd:", error);
+          alert("Kon wedstrijdgegevens niet bijwerken.");
+      }
+  }
+
+const matchForm = document.getElementById("matchForm");
+
+matchForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    // Alleen admin mag dit doen:
+    if (!auth.currentUser || auth.currentUser.email !== adminEmail) {
+        alert("Je hebt geen rechten om wedstrijden toe te voegen.");
+        return;
+    }
+
+    const round = parseInt(document.getElementById("roundInput").value);
+    const dateTimeStr = document.getElementById("dateTimeInput").value;
+    const homeTeam = document.getElementById("homeTeamInput").value.trim();
+    const awayTeam = document.getElementById("awayTeamInput").value.trim();
+    const finalScore = document.getElementById("finalScoreInput").value.trim();
+
+    // Converteer datum string naar Firebase Timestamp
+    const kickoffDate = new Date(dateTimeStr);
+    if (isNaN(kickoffDate.getTime())) {
+        alert("Ongeldige datum/tijd. Gebruik formaat YYYY-MM-DD HH:mm");
+        return;
+    }
+
+    const matchData = {
+        round: round,
+        kickoffTime: kickoffDate,
+        home_team: homeTeam,
+        away_team: awayTeam,
+        finalScore: finalScore || "",
+        attendees: ""
+    };
+
+    try {
+        // Voeg nieuwe wedstrijd toe aan Firestore "Matches" collectie
+        await addDoc(collection(db, "Matches"), matchData);
+        alert("Wedstrijd succesvol toegevoegd!");
+
+        // Optioneel: herlaad matches en update tabel
+        matches = await getSortedMatches();
+        resetTable("allMatches", false);
+        getMatchesTable(users, matches, allPredictions);
+
+        // Formulier resetten
+        matchForm.reset();
+
+    } catch (error) {
+        console.error("Fout bij toevoegen wedstrijd:", error);
+        alert("Er is een fout opgetreden bij het toevoegen.");
+    }
+});
 
 </script>
 </body>
 </html>
+
 
 
 
