@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Ajax Poule vak 402</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -13,7 +12,7 @@
 <div class="navbar">
     <div id="loginDiv">
         <a href="#" id="loginButton">
-            <i class="fas fa-user user-icon" id="userIcon"> </i> Login
+            <i class="fas fa-user user-icon" id="userIcon"></i> Login
         </a>
     </div>
     <div id="menuItems" hidden>
@@ -31,6 +30,13 @@
 
 <div id="mainContainer" class="mainContainer">
 
+    <div id="seasonSelectorDiv" style="margin-bottom: 15px; display: none;">
+        <label for="seasonSelect"><strong>Seizoen:</strong></label>
+        <select id="seasonSelect">
+            <option value="26-27">2026/2027</option>
+            <option value="25-26">2025/2026</option>
+        </select>
+    </div>
 
     <div class="login-window" id="auth-section" style="display: none;">
         <input type="email" id="email" placeholder="Email">
@@ -45,7 +51,7 @@
             <ul>
                 <li> Voorspellingen kunnen tot de officiële aanvang worden ingevuld </li>
                 <li> Men dient altijd een overwinning voor Ajax te voorspellen </li>
-                <li> Men dient geen voorspelling te doen die reeds gedaan is</li>
+                <li> Men dient geen voorspelling te doen die reeds gedaan zijn</li>
             </ul>
             <h3> Puntentelling </h3>
             <ul>
@@ -53,15 +59,11 @@
                 <li> Juiste aantal doelpunten van Ajax: 1 punt </li>
                 <li> Juiste verschil in doelpunten: 1 punt </li>
             </ul>
-            <p> Voorbeeld: je voorspelt 2-1 voor Ajax en het wordt helaas 2-3.
-                Dan krijg je 1 punt, omdat je het aantal doelpunten van Ajax goed hebt voorspeld.</p>
             <h3> Aanwezigheid </h3>
             <ul>
-                <li> Er zijn bonuspunten te verdienen door veel wedstrijden bij te wonen. </li>
-                <li> De nummer 1 krijgt 3 bonuspunten, de nummer 2 krijgt er 2 en de nummer 3 krijgt er 1. </li>
-                <li> Bij gelijke stand krijgt ieder het aantal punten dat hoort bij de gedeelde plek. </li>
+                <li> Er zijn bonuspunten te verdienen door veel wedstrijden bij te wonen (3, 2 en 1 punt voor de top 3). </li>
+                <li> Bij gelijke stand krijgt ieder het hoogste aantal punten dat hoort bij de gedeelde plek. </li>
             </ul>
-            <p> Voorbeeld: Jonah en Tim worden gedeeld 1e en Koen en Bart gedeeld 3e. Dan krijgen Jonah en Tim allebei 3 punten en Koen en Bart krijgen allebei 1 punt.</p>
         </div>
     </div>
 
@@ -81,7 +83,7 @@
                 </form>
             </div>
             <hr>
-    
+
             <div class="section">
                 <h2> Voorspellingen </h2>
                 <table id="prediction_table" class="prediction-tables">
@@ -104,6 +106,7 @@
                         <th> Winnaar </th>
                         <th> Ajax Goals </th>
                         <th> Doelsaldo </th>
+                        <th> Aanwezigheid </th>
                         <th> Totaal </th>
                     </tr>
                     <tbody></tbody>
@@ -117,6 +120,7 @@
                 <tr>
                     <th> Naam </th>
                     <th> Aantal </th>
+                    <th> Bonuspunten </th>
                 </tr>
                 <tbody></tbody>
             </table>
@@ -124,37 +128,37 @@
         <hr>
     </div>
 
-  <div id="matchesDiv" style="display: none">
-      <div class="section">
-          <h2> Wedstrijden </h2>
-          <button id="showAddMatchFormButton" style="display:none; margin-bottom: 10px;">Nieuwe Wedstrijd Toevoegen</button>
-          <div id="adminMatchForm" style="display:none; margin-top: 20px;">
-              <h3>Nieuwe Wedstrijd Toevoegen</h3>
-              <form id="matchForm">
-                  <label>Ronde: <input type="number" id="roundInput" required></label><br>
-                  <label>Datum & Tijd (YYYY-MM-DD HH:mm): <input type="text" id="dateTimeInput" placeholder="2024-07-01 20:00" required></label><br>
-                  <label>Thuis team: <input type="text" id="homeTeamInput" required></label><br>
-                  <label>Uit team: <input type="text" id="awayTeamInput" required></label><br>
-                  <label>Uitslag (optioneel, bv. 2-1): <input type="text" id="finalScoreInput" pattern="^\d+-\d+$"></label><br>
-                  <button type="submit">Wedstrijd opslaan</button>
-                  <button type="button" id="cancelAddMatchForm">Annuleren</button>
-              </form>
-          </div>
-          <div class="table-container">
-              <table id="allMatches" class="prediction-tables" style="width: 100%">
-                  <tr>
-                      <th> Ronde </th>
-                      <th> Datum </th>
-                      <th> Thuis </th>
-                      <th> Uit </th>
-                      <th> Uitslag </th>
-                      <!-- eventueel extra kolommen -->
-                  </tr>
-                  <tbody></tbody>
-              </table>
-          </div>
-      </div>
-  </div>
+    <div id="matchesDiv" style="display: none">
+        <div class="section">
+            <h2> Wedstrijden </h2>
+            <button id="showAddMatchFormButton" style="display:none; margin-bottom: 10px;">Nieuwe Wedstrijd Toevoegen</button>
+            <div id="adminMatchForm" style="display:none; margin-top: 20px;">
+                <h3>Nieuwe Wedstrijd Toevoegen</h3>
+                <form id="matchForm">
+                    <label>Ronde: <input type="number" id="roundInput" required></label><br>
+                    <label>Seizoen (bv. 26-27): <input type="text" id="seasonInput" value="26-27" required></label><br>
+                    <label>Datum & Tijd (YYYY-MM-DD HH:mm): <input type="text" id="dateTimeInput" placeholder="2026-08-01 20:00" required></label><br>
+                    <label>Thuis team: <input type="text" id="homeTeamInput" required></label><br>
+                    <label>Uit team: <input type="text" id="awayTeamInput" required></label><br>
+                    <label>Uitslag (optioneel, bv. 2-1): <input type="text" id="finalScoreInput" pattern="^\d+-\d+$"></label><br>
+                    <button type="submit">Wedstrijd opslaan</button>
+                    <button type="button" id="cancelAddMatchForm">Annuleren</button>
+                </form>
+            </div>
+            <div class="table-container">
+                <table id="allMatches" class="prediction-tables" style="width: 100%">
+                    <tr>
+                        <th> Ronde </th>
+                        <th> Datum </th>
+                        <th> Thuis </th>
+                        <th> Uit </th>
+                        <th> Uitslag </th>
+                    </tr>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 </div>
 
@@ -162,15 +166,11 @@
 <div id="predictedHomeScore" style="display: none;"></div>
 <div id="predictedAwayScore" style="display: none;"></div>
 
-
 <script type="module">
-    // Import the core Firebase App and Cloud Firestore services
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
-    import { getAuth, sendPasswordResetEmail, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
     import { getFirestore, collection, getDocs, addDoc, setDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyADh9mOGIa9tK8sGb9fu6PHUm-anH8aRPw",
         authDomain: "voetbalpoule-aef18.firebaseapp.com",
@@ -181,16 +181,13 @@
         appId: "1:678980778754:web:582c0f3d6487651b9ea01b"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-
-    // Initialize Cloud Firestore and get a reference to the service
     const db = getFirestore(app);
+    const auth = getAuth(app);
+    const adminEmail = "cd.kleijn@gmail.com";
 
-    // Get references to HTML elements
     const mainContainer = document.getElementById('mainContainer');
     const predictionDiv = document.getElementById("match_prediction");
-    const auth = getAuth(app);
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginButton = document.getElementById("loginButton");
@@ -198,38 +195,48 @@
     const authSectionDiv = document.getElementById('auth-section');
     const addPredictionButton = document.getElementById("addPrediction");
     const resetPasswordButton = document.getElementById("updatePassword");
+    const seasonSelect = document.getElementById("seasonSelect");
 
-    // Global variables
+    let matches = {};
+    let nextMatch = null;
+    let users = {};
+    let allPredictions = {};
+    let ranking = {};
+    let attendanceRanking = {};
+    let currentSeason = "26-27";
 
-    let matches;
-    let nextMatch;
-    let users;
-    let allPredictions;     // dict with matchId als key
-    let ranking;
-    let attendanceRanking;
+    seasonSelect.addEventListener("change", async () => {
+        currentSeason = seasonSelect.value;
+        await setGlobals();
 
-    // --- Authentication Event Listeners ---
+        // Zorg dat zowel de homepagina als de wedstridentabel ververst worden bij seizoenswissel
+        if (document.getElementById("match_prediction").style.display === "block") {
+            loadPredictionTables();
+        } else if (document.getElementById("matchesDiv").style.display === "block") {
+            getMatchesTable(users, matches, allPredictions);
+        }
+    });
 
-    // Sign In
     signInButton.addEventListener('click', async () => {
         const email = emailInput.value;
         const password = passwordInput.value;
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            document.getElementById("userName").textContent = auth.currentUser.displayName;
+            await signInWithEmailAndPassword(auth, email, password);
+            document.getElementById("userName").textContent = auth.currentUser.displayName || auth.currentUser.email;
             await setGlobals();
             loadPredictionWindow();
             document.getElementById("menuItems").style.display = "block";
+            document.getElementById("seasonSelectorDiv").style.display = "block";
         } catch (error) {
             console.error("Sign in error:", error);
-            alert("Unknown username and/or password");
+            alert("Onbekende gebruikersnaam en/of wachtwoord");
         }
     });
 
-    // Sign Out
     document.getElementById("logOutButton").addEventListener("click", async() => {
         try {
             await signOut(auth);
+            document.getElementById("seasonSelectorDiv").style.display = "none";
             resetMainContainer("loginDiv");
             loadLoginWindow();
         } catch (error) {
@@ -240,9 +247,9 @@
 
     addPredictionButton.addEventListener("click", async (event) => {
         event.preventDefault();
+        if (!nextMatch) return;
         const homeScore = getPredictedScore("home");
         const awayScore = getPredictedScore("away");
-
         const matchid = nextMatch.id;
         const userid = auth.currentUser.uid;
 
@@ -252,8 +259,8 @@
             scoreHomeTeam: homeScore,
             timestamp: new Date(),
             userId: userid,
-        }
-        
+        };
+
         if (document.getElementById("nextPredictionId").value !== ""){
             await setDoc(doc(db, "Predictions", document.getElementById("nextPredictionId").value), predictionData, {merge: true});
             alert("Voorspelling opgeslagen!");
@@ -264,76 +271,42 @@
                 alert("Voorspelling opgeslagen!");
                 await refreshPredictionTables();
             } catch (error) {
-
                 alert(error);
-            }}
+            }
+        }
     });
 
-    loginButton.addEventListener("click", () => {
-        loadLoginWindow();
-    });
-
+    loginButton.addEventListener("click", () => { loadLoginWindow(); });
 
     resetPasswordButton.addEventListener("click", () => {
         const userMail = document.getElementById("email").value;
-        const check1 = userMail !== "";
-        const check2 = userMail.includes("@");
-
-        if (check1 && check2) {
+        if (userMail !== "" && userMail.includes("@")) {
             sendPasswordResetEmail(auth, userMail)
-                .then(() => {
-                    alert("Er is een e-mail met wachtwoord-resetlink naar je verstuurd.");
-                })
-                .catch((error) => {
-                });
+                .then(() => { alert("Er is een e-mail met wachtwoord-resetlink naar je verstuurd."); })
+                .catch((error) => { console.error(error); });
         }
     });
 
     function getPredictedScore(scoreType) {
-        let inputFieldName;
-        let hiddenFieldName;
-
-        if (scoreType === "home") {
-            inputFieldName = "home_score";
-            hiddenFieldName = "predictedHomeScore";
-        } else {
-            inputFieldName = "away_score";
-            hiddenFieldName = "predictedAwayScore";
-        }
-
-        let score;
-
+        let inputFieldName = (scoreType === "home") ? "home_score" : "away_score";
+        let hiddenFieldName = (scoreType === "home") ? "predictedHomeScore" : "predictedAwayScore";
         const inputField = document.getElementById(inputFieldName);
-
-        if (inputField.value !== undefined && inputField.value !== null) {
-            score = inputField.value;
-        } else {
-            score = document.getElementById(hiddenFieldName).value;
-        }
-
-        return score;
+        return (inputField.value !== "") ? inputField.value : document.getElementById(hiddenFieldName).value;
     }
 
     async function loadDataFromTable(tableName){
         const coll = collection(db, tableName);
         const snapshot = await getDocs(coll);
-
-        const resultList = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        return resultList;
-
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
 
     async function setGlobals() {
-        matches = await getSortedMatches();
+        matches = await getSortedMatches(currentSeason);
         nextMatch = getNextMatch(matches);
         users = await getUsers();
-        allPredictions = await getAllPredictions();     // dict with matchId als key
-        ranking = getRanking(users, matches, allPredictions);
+        allPredictions = await getAllPredictions();
         attendanceRanking = getAttendanceRanking(users, matches);
+        ranking = getRanking(users, matches, allPredictions, attendanceRanking);
     }
 
     async function refreshPredictionTables(){
@@ -341,55 +314,45 @@
         resetTable("prediction_table", false);
         fillPredictionTable();
         predictionDiv.style.display = "block";
-        mainContainer.appendChild(predictionDiv);
     }
-
 
     async function getUsers() {
         try {
-
             const userList = await loadDataFromTable("Users");
-            var users = {};
-
+            var usersObj = {};
             for (var i = 0; i < userList.length; i++) {
-                users[userList[i]["id"]] = userList[i]["userId"];
+                // Opgelost: displayName (of 'id' / 'name' afhankelijk van je database veld) als key, userId als value
+                let displayName = userList[i]["displayName"] || userList[i]["id"] || userList[i]["name"];
+                usersObj[displayName] = userList[i]["userId"];
             }
-
-            return users;
-
+            return usersObj;
         } catch (error) {
             console.error("Error getting users:", error);
         }
     }
 
-
-    async function getSortedMatches() {
+    async function getSortedMatches(seasonFilter) {
         try {
             const matchesCol = collection(db, "Matches");
             const matchesQuery = query(matchesCol, orderBy("kickoffTime"));
             const matchSnapshot = await getDocs(matchesQuery);
-            const matchList = matchSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            const matchList = matchSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            const matches = {};
+            const matchesObj = {};
             for (var i = 0; i < matchList.length; i++){
-                matches[matchList[i]["id"]] = matchList[i];
+                if (!matchList[i]["season"] || matchList[i]["season"] === seasonFilter) {
+                    matchesObj[matchList[i]["id"]] = matchList[i];
+                }
             }
-
-            return matches;
-
+            return matchesObj;
         } catch (error) {
             console.error("Error getting matches:", error);
         }
-
     }
 
-    function getNextMatch(matches){
+    function getNextMatch(matchesObj){
         const currentDate = new Date();
-
-        for (const [key, value] of Object.entries(matches)) {
+        for (const [key, value] of Object.entries(matchesObj)) {
             if (value["kickoffTime"].toDate() > currentDate) {
                 return value;
             }
@@ -397,79 +360,67 @@
         return null;
     }
 
-    function getCurrentMatch(matches){
-        const currentDate = new Date();
-
-        for (const [key, value] of Object.entries(matches)){
-            if (value["kickoffTime"].toDate() < currentDate && value["finalScore"] === ""){
-                return value;
-            }
-        }
-
-        return null;
-    }
-
     function timestampToFullDateRepr(timestamp){
         const dateObj = timestamp.toDate();
-
         const day = dateObj.getDate().toString().padStart(2, '0');
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Maanden zijn 0-indexed
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
         const year = dateObj.getFullYear();
-
         const hours = dateObj.getHours().toString().padStart(2, '0');
         const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-
-        return `${day}-${month}-${year} ${hours}:${minutes}`;     // backticks zijn belangrijk
+        return `${day}-${month}-${year} ${hours}:${minutes}`;
     }
 
-    function getAttendanceRanking(users, matches) {
-        var attendancePoints = {};
-        var attendanceRanking = [];
-        var attendees = "";
-
-        for (const user_name of Object.keys(users)) {
-            attendancePoints[user_name] = 0;
+    function getAttendanceRanking(usersObj, matchesObj) {
+        var attendanceCounts = {};
+        for (const user_name of Object.keys(usersObj)) {
+            attendanceCounts[user_name] = 0;
         }
 
-        for (const [match_id, match_details] of Object.entries(matches)){
-            const ajaxPlayingHome = (match_details["home_team"] === "Ajax");
-            if (ajaxPlayingHome) {
-                attendees = match_details["attendees"] ?? "";
-                for (const [user_name, user_id] of Object.entries(users)){
+        for (const [match_id, match_details] of Object.entries(matchesObj)){
+            if (match_details["home_team"] === "Ajax") {
+                let attendees = match_details["attendees"] ?? "";
+                for (const user_name of Object.keys(usersObj)){
                     if (attendees.includes(user_name)){
-                        let currentPoints = attendancePoints[user_name] ?? 0;
-                        attendancePoints[user_name] = currentPoints + 1;
+                        attendanceCounts[user_name] = (attendanceCounts[user_name] || 0) + 1;
                     }
                 }
             }
-
         }
 
-        for (const [user_name, points] of Object.entries(attendancePoints)) {
-            attendanceRanking.push({naam: user_name, score: points});
+        let sortedArr = Object.entries(attendanceCounts).map(([name, count]) => ({ naam: name, aantal: count }));
+        sortedArr.sort((a, b) => b.aantal - a.aantal);
+
+        var bonusPoints = {};
+        let currentRank = 1;
+
+        for (let i = 0; i < sortedArr.length; i++) {
+            let user = sortedArr[i].naam;
+            let count = sortedArr[i].aantal;
+
+            if (i > 0 && count < sortedArr[i - 1].aantal) {
+                currentRank = i + 1;
+            }
+
+            let bPoints = 0;
+            if (currentRank === 1) bPoints = 3;
+            else if (currentRank === 2) bPoints = 2;
+            else if (currentRank === 3) bPoints = 1;
+
+            bonusPoints[user] = { aantal: count, bonus: bPoints };
         }
 
-        attendanceRanking.sort((a, b) => b.score - a.score);
-
-        var ranking = {};
-
-        for (var i = 0; i < attendanceRanking.length; i++){
-            ranking[attendanceRanking[i].naam] = attendanceRanking[i].score;
-        }
-
-        return ranking;
-
+        return bonusPoints;
     }
 
-    function getRanking(users, matches, predictions) {
+    function getRanking(usersObj, matchesObj, predictions, attendanceInfo) {
         var userRanking = [];
 
-        for (const [user_name, user_id] of Object.entries(users)){
-            var baseScore = 0;
+        for (const [user_name, user_id] of Object.entries(usersObj)){
+            var winnerScore = 0;
             var goalsAjaxScore = 0;
             var goalDiffScore = 0;
-            var winnerScore = 0;
-            for (const [match_id, match_details] of Object.entries(matches)) {
+
+            for (const [match_id, match_details] of Object.entries(matchesObj)) {
                 const match_predictions = predictions[match_id] ?? {};
                 const user_prediction = match_predictions[user_id] ?? [""];
                 const ajaxPlayingHome = match_details["home_team"] === "Ajax";
@@ -478,108 +429,103 @@
                 goalsAjaxScore += points[1];
                 goalDiffScore += points[2];
             }
-            let totalScore = winnerScore + goalsAjaxScore + goalDiffScore
-            userRanking.push({naam: user_name, score: totalScore, wS: winnerScore, gA: goalsAjaxScore, gD: goalDiffScore});
+
+            let matchPointsTotal = winnerScore + goalsAjaxScore + goalDiffScore;
+            let attendanceBonus = attendanceInfo[user_name] ? attendanceInfo[user_name].bonus : 0;
+            let totalScore = matchPointsTotal + attendanceBonus;
+
+            userRanking.push({
+                naam: user_name,
+                score: totalScore,
+                wS: winnerScore,
+                gA: goalsAjaxScore,
+                gD: goalDiffScore,
+                attBonus: attendanceBonus
+            });
         }
+
         userRanking.sort((a, b) => b.score - a.score);
 
-        var ranking = {};
-
+        var rankingObj = {};
         for (var i = 0; i < userRanking.length; i++){
-            ranking[userRanking[i].naam] = [userRanking[i].score, userRanking[i].wS, userRanking[i].gA, userRanking[i].gD];
+            rankingObj[userRanking[i].naam] = [
+                userRanking[i].score,
+                userRanking[i].wS,
+                userRanking[i].gA,
+                userRanking[i].gD,
+                userRanking[i].attBonus
+            ];
         }
-
-        return ranking;
-
+        return rankingObj;
     }
 
     function getPredictionPoints(prediction, finalScore, ajaxPlaysHome) {
-        if (prediction === "" || finalScore === ""){
+        if (prediction === "" || !finalScore){
             return [0, 0, 0];
         } else if (prediction === finalScore) {
             return [1, 1, 1];
         }
 
         var points = [0, 0, 0];
-
         const predictedScore = prediction.split("-");
-        const predictedHomeGoals = predictedScore[0];
-        const predictedAwayGoals = predictedScore[1];
+        const predictedHomeGoals = parseInt(predictedScore[0]);
+        const predictedAwayGoals = parseInt(predictedScore[1]);
         const predictedDiff = predictedHomeGoals - predictedAwayGoals;
 
         const realizedScore = finalScore.split("-");
-        const realizedHomeGoals = realizedScore[0];
-        const realizedAwayGoals = realizedScore[1];
+        const realizedHomeGoals = parseInt(realizedScore[0]);
+        const realizedAwayGoals = parseInt(realizedScore[1]);
         const realizedDiff = realizedHomeGoals - realizedAwayGoals;
 
-        // 1 point if winner is correct
-
-        if (predictedHomeGoals > predictedAwayGoals && realizedHomeGoals > realizedAwayGoals) {
-            points[0] = 1;
-        } else if (predictedHomeGoals === predictedAwayGoals && realizedHomeGoals === realizedAwayGoals) {
-            points[0] = 1;
-        }  else if (predictedHomeGoals < predictedAwayGoals && realizedHomeGoals < realizedAwayGoals) {
+        if ((predictedHomeGoals > predictedAwayGoals && realizedHomeGoals > realizedAwayGoals) ||
+            (predictedHomeGoals === predictedAwayGoals && realizedHomeGoals === realizedAwayGoals) ||
+            (predictedHomeGoals < predictedAwayGoals && realizedHomeGoals < realizedAwayGoals)) {
             points[0] = 1;
         }
 
-        // 1 point if Ajax goals is correct
         const homeGoalsCorrect = predictedHomeGoals === realizedHomeGoals;
         const awayGoalsCorrect = predictedAwayGoals === realizedAwayGoals;
 
-        if ( (ajaxPlaysHome && homeGoalsCorrect) || (!ajaxPlaysHome && awayGoalsCorrect)) {
+        if ((ajaxPlaysHome && homeGoalsCorrect) || (!ajaxPlaysHome && awayGoalsCorrect)) {
             points[1] = 1;
         }
-
-        // 1 point if goalDiff is correct
 
         if (predictedDiff === realizedDiff) {
             points[2] = 1;
         }
 
-        return points
+        return points;
     }
-
 
     async function getAllPredictions(){
         const predictions = await loadDataFromTable("Predictions");
         var predictionsDict = {};
-
-
         for (var i = 0; i < predictions.length; i++){
             const home_score = predictions[i]["scoreHomeTeam"].toString();
             const away_score = predictions[i]["scoreAwayTeam"].toString();
             const user_id = predictions[i]["userId"];
             if (!(predictions[i]["matchId"] in predictionsDict)) {
-                predictionsDict[predictions[i]["matchId"]] = {}
+                predictionsDict[predictions[i]["matchId"]] = {};
             }
             predictionsDict[predictions[i]["matchId"]][user_id] = [home_score + "-" + away_score, predictions[i]["id"]];
         }
-
         return predictionsDict;
     }
 
     function fillPredictionTable() {
         const predictionTable = document.getElementById("prediction_table");
-        let matchPredictions;
-
-        if (nextMatch) {
-            matchPredictions = allPredictions[nextMatch["id"]] ?? {};
-        } else {
-            matchPredictions = {};
-        }
+        let matchPredictions = nextMatch ? (allPredictions[nextMatch["id"]] ?? {}) : {};
 
         for (const [key, value] of Object.entries(users)) {
-
             let row = predictionTable.insertRow(-1);
             let cell = row.insertCell();
             cell.textContent = key;
 
             let userPrediction = matchPredictions[value] ?? ["", ""];
             cell = row.insertCell();
-
             cell.textContent = userPrediction[0];
-            if (value === auth.currentUser.uid) {
-                console.log(userPrediction);
+
+            if (auth.currentUser && value === auth.currentUser.uid) {
                 if (userPrediction[0] !== "") {
                     let home_score = userPrediction[0].split("-")[0];
                     let away_score = userPrediction[0].split("-")[1];
@@ -589,6 +535,8 @@
                     document.getElementById("predictedAwayScore").value = away_score;
                     document.getElementById("nextPredictionId").value = userPrediction[1];
                 } else {
+                    document.getElementById("home_score").value = "";
+                    document.getElementById("away_score").value = "";
                     document.getElementById("predictedHomeScore").value = 0;
                     document.getElementById("predictedAwayScore").value = 0;
                     document.getElementById("nextPredictionId").value = "";
@@ -597,11 +545,7 @@
         }
     }
 
-    async function loadPredictionTables() {
-        console.log("loading prediction table");
-
-        // set next_match_date, home_team and away_team
-
+    function loadPredictionTables() {
         if (!nextMatch) {
             document.getElementById("nextMatchPredictions").hidden = true;
         } else {
@@ -612,58 +556,39 @@
             document.getElementById("nextMatchPredictions").hidden = false;
         }
 
-        console.log("fill ranking table");
-        // fill ranking table
-
         const rankingTable = document.getElementById("ranking_table");
-
+        resetTable("ranking_table", false);
         for (const [userName, userScores] of Object.entries(ranking)) {
-            const tr = rankingTable.insertRow(-1)
-
-            const userCell = tr.insertCell(0);
-            userCell.innerHTML = userName;
-
-            const scoreWinnerCell = tr.insertCell(1);
-            scoreWinnerCell.innerHTML = userScores[1];
-
-            const scoreAjaxCell = tr.insertCell(2);
-            scoreAjaxCell.innerHTML = userScores[2];
-
-            const scoreGoalDiffCell = tr.insertCell(3);
-            scoreGoalDiffCell.innerHTML = userScores[3];
-
-            const totalScoreCell = tr.insertCell(4);
-            totalScoreCell.innerHTML = userScores[0];
-
+            const tr = rankingTable.insertRow(-1);
+            tr.insertCell(0).innerHTML = userName;
+            tr.insertCell(1).innerHTML = userScores[1];
+            tr.insertCell(2).innerHTML = userScores[2];
+            tr.insertCell(3).innerHTML = userScores[3];
+            tr.insertCell(4).innerHTML = userScores[4];
+            tr.insertCell(5).innerHTML = userScores[0];
         }
-
-        // fill attendance ranking table
 
         const attendanceRankingTable = document.getElementById("attendance_ranking_table");
-
-        for (const [userName, userScore] of Object.entries(attendanceRanking)) {
+        resetTable("attendance_ranking_table", false);
+        for (const [userName, data] of Object.entries(attendanceRanking)) {
             const tr = attendanceRankingTable.insertRow(-1);
-
-            const userCell = tr.insertCell(0);
-            userCell.innerHTML = userName;
-
-            const scoreCell = tr.insertCell(1);
-            scoreCell.innerHTML = userScore;
+            tr.insertCell(0).innerHTML = userName;
+            tr.insertCell(1).innerHTML = data.aantal;
+            tr.insertCell(2).innerHTML = `+${data.bonus}`;
         }
 
-        document.getElementById("match_prediction").hidden = false;
+        document.getElementById("match_prediction").style.display = "block";
     }
 
     function resetMainContainer(activeDivName){
         for (let i = 0; i < mainContainer.children.length; i++) {
             const child = mainContainer.children[i];
-            if (child.id !== activeDivName) {
+            if (child.id !== activeDivName && child.id !== "seasonSelectorDiv") {
                 child.style.display = "none";
-            } else {
+            } else if (child.id === activeDivName) {
                 child.style.display = "block";
             }
         }
-
         resetTable("prediction_table", false);
         resetTable("ranking_table", false);
         resetTable("attendance_ranking_table", false);
@@ -673,295 +598,184 @@
     function loadLoginWindow(){
         resetMainContainer("loginDiv");
         authSectionDiv.style.display = "block";
-        mainContainer.appendChild(authSectionDiv);
+        document.getElementById("seasonSelectorDiv").style.display = "none";
     }
 
     function loadPredictionWindow(){
-        resetMainContainer("predictionDiv");
-
+        resetMainContainer("match_prediction");
         loadPredictionTables();
-        predictionDiv.style.display = "block";
-        mainContainer.appendChild(predictionDiv);
         document.getElementById("loginDiv").style.display = "none";
         document.getElementById("userInfoDiv").style.display = "block";
+        document.getElementById("seasonSelectorDiv").style.display = "block";
     }
 
-    document.getElementById("homeButton").addEventListener("click", async () => {
-        loadPredictionWindow();
-    });
-
+    document.getElementById("homeButton").addEventListener("click", () => { loadPredictionWindow(); });
     document.getElementById("rulesButton").addEventListener("click", () => {
-       resetMainContainer("rules");
-       document.getElementById("rules").style.display = "block";
+        resetMainContainer("rules");
+        document.getElementById("rules").style.display = "block";
+        document.getElementById("seasonSelectorDiv").style.display = "none";
     });
 
-
-    document.getElementById("allMatchesButton").addEventListener("click", () => {
+    document.getElementById("allMatchesButton").addEventListener("click", async () => {
         resetMainContainer("matchesDiv");
         getMatchesTable(users, matches, allPredictions);
         document.getElementById("matchesDiv").style.display = "block";
-        mainContainer.appendChild(document.getElementById("matchesDiv"))
+        document.getElementById("seasonSelectorDiv").style.display = "block";
+        updateAdminMatchControls();
     });
 
-    function getMatchesTable(users, matches, allPredictions) {
-
+    function getMatchesTable(usersObj, matchesObj, allPreds) {
         const matchTable = document.getElementById("allMatches");
         const headerRow = matchTable.rows[0];
 
-        // Voeg kolom "Acties" alleen als admin
-        if (auth.currentUser && auth.currentUser.email === adminEmail && !headerRow.innerHTML.includes("Acties")) {
+        headerRow.innerHTML = "<th> Ronde </th><th> Datum </th><th> Thuis </th><th> Uit </th><th> Uitslag </th>";
+
+        if (auth.currentUser && auth.currentUser.email === adminEmail) {
             let th = document.createElement("th");
             th.textContent = "Acties";
             headerRow.appendChild(th);
         }
 
-        for (const username of Object.keys(users)) {
-            if (!headerRow.innerHTML.includes(username)) {
-                let th = document.createElement("th");
-                th.textContent = username;
-                headerRow.appendChild(th);
-            }
-        }
-
-        if (!headerRow.innerHTML.includes("Aanwezig")) {
+        for (const username of Object.keys(usersObj)) {
             let th = document.createElement("th");
-            th.textContent = "Aanwezig";
+            th.textContent = username;
             headerRow.appendChild(th);
         }
 
+        let thAtt = document.createElement("th");
+        thAtt.textContent = "Aanwezig";
+        headerRow.appendChild(thAtt);
+
         let round = 1;
-
-        for (const currentMatch of Object.values(matches)) {
+        for (const currentMatch of Object.values(matchesObj)) {
             let tr = document.createElement("tr");
-
             let matchDate = timestampToFullDateRepr(currentMatch["kickoffTime"]);
-
-            let rowData = [round, matchDate, currentMatch["home_team"], currentMatch["away_team"],
-                currentMatch["finalScore"]];
-
-            let matchPredictions = allPredictions[currentMatch["id"]] ?? {};
-
-            for (const userid of Object.values(users)) {
-                let userPrediction = matchPredictions[userid] ?? ["", ""];
-                rowData.push(userPrediction[0]);
-            }
-
-            let attendance = currentMatch["attendees"] ?? "";
-            rowData.push(attendance);
+            let rowData = [round, matchDate, currentMatch["home_team"], currentMatch["away_team"], currentMatch["finalScore"] || ""];
 
             for (const data of rowData) {
                 let cell = tr.insertCell();
                 cell.textContent = data;
             }
 
-            // Voeg bewerk knop toe als admin
             if (auth.currentUser && auth.currentUser.email === adminEmail) {
                 let actionCell = tr.insertCell();
                 let editButton = document.createElement("button");
-                editButton.textContent = "Bewerk uitslag";
-                editButton.addEventListener("click", () => openEditScoreDialog(currentMatch));
+                editButton.textContent = "Bewerk";
                 actionCell.appendChild(editButton);
             }
 
+            let matchPredictions = allPreds[currentMatch["id"]] ?? {};
+            for (const userid of Object.values(usersObj)) {
+                let userPrediction = matchPredictions[userid] ?? ["", ""];
+                let cell = tr.insertCell();
+                cell.textContent = userPrediction[0];
+            }
+
+            let cellAtt = tr.insertCell();
+            cellAtt.textContent = currentMatch["attendees"] ?? "";
+
             matchTable.appendChild(tr);
             round += 1;
-
         }
-
     }
 
     function resetTable(tableName, resetHeaders) {
-
         const table = document.getElementById(tableName);
+        if (!table) return;
+        const startRow = resetHeaders ? 0 : 1;
+        while (table.rows.length > startRow) {
+            table.deleteRow(startRow);
+        }
+    }
 
-        if (!table) {
+    const showAddMatchFormButton = document.getElementById("showAddMatchFormButton");
+    const adminMatchForm = document.getElementById("adminMatchForm");
+    const cancelAddMatchFormButton = document.getElementById("cancelAddMatchForm");
+
+    function updateAdminMatchControls() {
+        if (auth.currentUser && auth.currentUser.email === adminEmail && document.getElementById("matchesDiv").style.display === "block") {
+            showAddMatchFormButton.style.display = "inline-block";
+        } else {
+            showAddMatchFormButton.style.display = "none";
+            adminMatchForm.style.display = "none";
+        }
+    }
+
+    showAddMatchFormButton.addEventListener("click", () => {
+        adminMatchForm.style.display = "block";
+        showAddMatchFormButton.style.display = "none";
+    });
+
+    cancelAddMatchFormButton.addEventListener("click", () => {
+        adminMatchForm.style.display = "none";
+        showAddMatchFormButton.style.display = "inline-block";
+    });
+
+    const matchForm = document.getElementById("matchForm");
+
+    matchForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // Alleen admin mag dit doen:
+        if (!auth.currentUser || auth.currentUser.email !== adminEmail) {
+            alert("Je hebt geen rechten om wedstrijden toe te voegen.");
             return;
         }
 
-        const startRow = resetHeaders ? 0 : 1;
+        const round = parseInt(document.getElementById("roundInput").value);
+        const season = document.getElementById('seasonInput').value;
+        const dateTimeStr = document.getElementById("dateTimeInput").value;
+        const homeTeam = document.getElementById("homeTeamInput").value.trim();
+        const awayTeam = document.getElementById("awayTeamInput").value.trim();
+        const finalScore = document.getElementById("finalScoreInput").value.trim();
 
-        while (table.rows.length > startRow) {
-            table.deleteRow(startRow)
+        // Converteer datum string naar Firebase Timestamp
+        const kickoffDate = new Date(dateTimeStr);
+        if (isNaN(kickoffDate.getTime())) {
+            alert("Ongeldige datum/tijd. Gebruik formaat YYYY-MM-DD HH:mm");
+            return;
         }
 
-    }
+        const matchData = {
+            round: round,
+            season: season,
+            kickoffTime: kickoffDate,
+            home_team: homeTeam,
+            away_team: awayTeam,
+            finalScore: finalScore || "",
+            attendees: ""
+        };
 
-  const showAddMatchFormButton = document.getElementById("showAddMatchFormButton");
-  const adminMatchForm = document.getElementById("adminMatchForm");
-  const cancelAddMatchFormButton = document.getElementById("cancelAddMatchForm");
+        try {
+            // Voeg nieuwe wedstrijd toe aan Firestore "Matches" collectie
+            await addDoc(collection(db, "Matches"), matchData);
+            alert("Wedstrijd succesvol toegevoegd!");
 
-  // Functie om admin controls in Wedstrijden tab te tonen of verbergen
-  function updateAdminMatchControls() {
-      if (auth.currentUser && auth.currentUser.email === adminEmail && document.getElementById("matchesDiv").style.display === "block") {
-          showAddMatchFormButton.style.display = "inline-block";
-      } else {
-          showAddMatchFormButton.style.display = "none";
-          adminMatchForm.style.display = "none";
-      }
-  }
+            // Optioneel: herlaad matches en update tabel
+            matches = await getSortedMatches(season);
+            resetTable("allMatches", false);
+            getMatchesTable(users, matches, allPredictions);
 
-  showAddMatchFormButton.addEventListener("click", () => {
-      adminMatchForm.style.display = "block";
-      showAddMatchFormButton.style.display = "none";
-  });
+            // Formulier resetten
+            matchForm.reset();
 
-  cancelAddMatchFormButton.addEventListener("click", () => {
-      adminMatchForm.style.display = "none";
-      showAddMatchFormButton.style.display = "inline-block";
-      matchForm.reset();
-  });
+        } catch (error) {
+            console.error("Fout bij toevoegen wedstrijd:", error);
+            alert("Er is een fout opgetreden bij het toevoegen.");
+        }
+    });
 
-  // Pas ook aan bij het openen van het Wedstrijden tabblad
-  document.getElementById("allMatchesButton").addEventListener("click", async () => {
-      resetMainContainer("matchesDiv");
-      getMatchesTable(users, matches, allPredictions);
-      document.getElementById("matchesDiv").style.display = "block";
-      mainContainer.appendChild(document.getElementById("matchesDiv"));
-      updateAdminMatchControls();
-  });
-
-  // Update admin controls ook na login en logout
-  onAuthStateChanged(auth, (user) => {
-      updateAdminMatchControls();
-  });
-
-    const adminEmail = "cd.kleijn@gmail.com"; 
-
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // Toon gebruikersnaam etc.
-            document.getElementById("userName").textContent = user.displayName ?? user.email;
-    
-            // Controleer admin-rechten:
+            document.getElementById("userName").textContent = user.displayName || user.email;
             if (user.email === adminEmail) {
-                showAdminControls();
-            } else {
-                hideAdminControls();
+                updateAdminMatchControls();
             }
-    
-            // Rest van je init code...
         } else {
-            // Niet ingelogd
-            hideAdminControls();
+            showAddMatchFormButton.style.display = "none";
+            adminMatchForm.style.display = "none";
         }
-  });
-    
-  function showAdminControls() {
-      // Toon formulier om nieuwe wedstrijd toe te voegen en uitslagen te wijzigen
-      document.getElementById("adminMatchForm").style.display = "block";
-  }
-    
-  function hideAdminControls() {
-      document.getElementById("adminMatchForm").style.display = "none";
-  }
-
-  async function openEditScoreDialog(match) {
-      const newScore = prompt("Voer nieuwe uitslag in (bijv. 2-1):", match.finalScore);
-      if (newScore === null) return; // gebruiker annuleerde
-
-      if (!/^\d+-\d+$/.test(newScore.trim())) {
-          alert("Ongeldig formaat. Gebruik bv. 2-1");
-          return;
-      }
-
-      const newAttendees = prompt("Voer aanwezigen in (komma-gescheiden, bv. Jonah,Tim):", match.attendees ?? "");
-      if (newAttendees === null) return; // gebruiker annuleerde
-
-      try {
-          const matchRef = doc(db, "Matches", match.id);
-          await setDoc(matchRef, { 
-              finalScore: newScore.trim(),
-              attendees: newAttendees.trim()
-          }, { merge: true });
-          alert("Wedstrijdgegevens bijgewerkt!");
-
-          // Update lokaal en herlaad tabel
-          matches[match.id].finalScore = newScore.trim();
-          matches[match.id].attendees = newAttendees.trim();
-          resetTable("allMatches", false);
-          getMatchesTable(users, matches, allPredictions);
-
-          // Herbereken ranking en attendance
-          await setGlobals();
-      } catch (error) {
-          console.error("Fout bij bijwerken wedstrijd:", error);
-          alert("Kon wedstrijdgegevens niet bijwerken.");
-      }
-  }
-
-const matchForm = document.getElementById("matchForm");
-
-matchForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    // Alleen admin mag dit doen:
-    if (!auth.currentUser || auth.currentUser.email !== adminEmail) {
-        alert("Je hebt geen rechten om wedstrijden toe te voegen.");
-        return;
-    }
-
-    const round = parseInt(document.getElementById("roundInput").value);
-    const dateTimeStr = document.getElementById("dateTimeInput").value;
-    const homeTeam = document.getElementById("homeTeamInput").value.trim();
-    const awayTeam = document.getElementById("awayTeamInput").value.trim();
-    const finalScore = document.getElementById("finalScoreInput").value.trim();
-
-    // Converteer datum string naar Firebase Timestamp
-    const kickoffDate = new Date(dateTimeStr);
-    if (isNaN(kickoffDate.getTime())) {
-        alert("Ongeldige datum/tijd. Gebruik formaat YYYY-MM-DD HH:mm");
-        return;
-    }
-
-    const matchData = {
-        round: round,
-        kickoffTime: kickoffDate,
-        home_team: homeTeam,
-        away_team: awayTeam,
-        finalScore: finalScore || "",
-        attendees: ""
-    };
-
-    try {
-        // Voeg nieuwe wedstrijd toe aan Firestore "Matches" collectie
-        await addDoc(collection(db, "Matches"), matchData);
-        alert("Wedstrijd succesvol toegevoegd!");
-
-        // Optioneel: herlaad matches en update tabel
-        matches = await getSortedMatches();
-        resetTable("allMatches", false);
-        getMatchesTable(users, matches, allPredictions);
-
-        // Formulier resetten
-        matchForm.reset();
-
-    } catch (error) {
-        console.error("Fout bij toevoegen wedstrijd:", error);
-        alert("Er is een fout opgetreden bij het toevoegen.");
-    }
-});
-
+    });
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
