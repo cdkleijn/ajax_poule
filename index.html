@@ -661,6 +661,7 @@
                 let actionCell = tr.insertCell();
                 let editButton = document.createElement("button");
                 editButton.textContent = "Bewerk";
+                editButton.addEventListener("click", () => openEditScoreDialog(currentMatch));
                 actionCell.appendChild(editButton);
             }
 
@@ -710,6 +711,40 @@
         adminMatchForm.style.display = "none";
         showAddMatchFormButton.style.display = "inline-block";
     });
+
+    async function openEditScoreDialog(match) {
+        const newScore = prompt("Voer nieuwe uitslag in (bijv. 2-1):", match.finalScore);
+        if (newScore === null) return; // gebruiker annuleerde
+
+        if (!/^\d+-\d+$/.test(newScore.trim())) {
+            alert("Ongeldig formaat. Gebruik bv. 2-1");
+            return;
+        }
+
+        const newAttendees = prompt("Voer aanwezigen in (komma-gescheiden, bv. Jonah,Tim):", match.attendees ?? "");
+        if (newAttendees === null) return; // gebruiker annuleerde
+
+        try {
+            const matchRef = doc(db, "Matches", match.id);
+            await setDoc(matchRef, {
+                finalScore: newScore.trim(),
+                attendees: newAttendees.trim()
+            }, { merge: true });
+            alert("Wedstrijdgegevens bijgewerkt!");
+
+            // Update lokaal en herlaad tabel
+            matches[match.id].finalScore = newScore.trim();
+            matches[match.id].attendees = newAttendees.trim();
+            resetTable("allMatches", false);
+            getMatchesTable(users, matches, allPredictions);
+
+            // Herbereken ranking en attendance
+            await setGlobals();
+        } catch (error) {
+            console.error("Fout bij bijwerken wedstrijd:", error);
+            alert("Kon wedstrijdgegevens niet bijwerken.");
+        }
+    }
 
     const matchForm = document.getElementById("matchForm");
 
